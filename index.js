@@ -8,19 +8,17 @@ console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXX
 console.log(dateformat());
 
 var port = (process.env.PORT || 8082);
-app.use("/", express.static(path.join(__dirname,"public")));
+app.use("/", express.static( path.join(__dirname,"public")));
 
-var app = express();
 app.get("/time", (request, response) => {
         response.send("<html><body><h1>" + dateformat("dS mmmm 'of' yyyy, HH:MM:ss") + "<h1></html></body>")
     })
 
-app.listen(port, (err) => {
-    if (!err)
-        console.log("Server inizializated on port " + port);
-    else
-        console.log("Error" + port + ": " + err)
-
+app.listen(port, () => {
+    console.log("Server inizializated on port  " +port);
+}).on("error",(e) =>{
+    console.log("Server can not be started: " +e);
+    process.exit(1);
 });
 //console.log("Server inizializated on port " + port);
 console.log("-----------G13's server-----------------");
