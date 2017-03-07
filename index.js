@@ -1,12 +1,14 @@
 var dateformat = require("dateformat");
 var express = require("express");
-
+var app = express();
+var path = require("path");
 
 console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 console.log(dateformat());
 
 var port = (process.env.PORT || 8082);
+app.use("/", express.static(path.join(__dirname,"public")));
 
 var app = express();
 app.get("/time", (request, response) => {
