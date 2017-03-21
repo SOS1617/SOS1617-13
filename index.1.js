@@ -65,26 +65,43 @@ var corners = [{
 }];
 
 
-// Base GET
+// Base GET goals
 app.get("/", function (request, response) {
-    console.log("INFO: Redirecting to /contacts");
-    response.redirect(301, BASE_API_PATH + "/contacts");
+    console.log("INFO: Redirecting to /goals");
+    response.redirect(301, BASE_API_PATH + "/goals");
+    
+});
+
+// Base GET corners
+app.get("/", function (request, response) {
+    console.log("INFO: Redirecting to /corners");
+    response.redirect(301, BASE_API_PATH + "/corners");
+    
 });
 
 
-// GET a collection
-app.get(BASE_API_PATH + "/contacts", function (request, response) {
-    console.log("INFO : new request to /contacts");
-    response.send(contacts);
+
+// GET a collection goals
+app.get(BASE_API_PATH + "/goals", function (request, response) {
+    console.log("INFO : new request to /goals");
+    response.send(goals);
+    //TBD
+});
+
+// GET a collection corners
+app.get(BASE_API_PATH + "/corners", function (request, response) {
+    console.log("INFO : new request to /corners");
+    response.send(corners);
     //TBD
 });
 
 
+
 // GET a single resource
-app.get(BASE_API_PATH + "/contacts/:name", function (request, response) {
+app.get(BASE_API_PATH + "/goals/:city", function (request, response) {
     var name = request.params.name;
-    var filteredContact = contacts.filter((c)=>{
-       return c.name === name;
+    var filteredContact = goals.filter((c)=>{
+       return c.city === city;
         //esto es una opcion, la de arriba pero la mejor forma de comparar es la siguiente
        // return c.name.localeCompare(name, "en" ,{"sensitivy":"base"})===0;
     })
@@ -94,28 +111,28 @@ app.get(BASE_API_PATH + "/contacts/:name", function (request, response) {
 
 
 //POST over a collection
-app.post(BASE_API_PATH + "/contacts", function (request, response) {
+app.post(BASE_API_PATH + "/goals", function (request, response) {
     //TBD
 });
 
 
 //POST over a single resource
-app.post(BASE_API_PATH + "/contacts/:name", function (request, response) {
+app.post(BASE_API_PATH + "/goals/:city", function (request, response) {
     response.sendStatus(405);
 });
 
 
 //PUT over a collection
-app.put(BASE_API_PATH + "/contacts", function (request, response) {
+app.put(BASE_API_PATH + "/goals", function (request, response) {
     response.sendStatus(405);
 });
 
 
 //PUT over a single resource
-app.put(BASE_API_PATH + "/contacts/:name", function (request, response) {
+app.put(BASE_API_PATH + "/goals/:city", function (request, response) {
     var updatedContact = request.body;
     var nameParam = request.params.name;
-    contacts =contacts.map((c)=>{
+    goals =city.map((c)=>{
         if(c.name===nameParam){
             return
         }else{
@@ -128,7 +145,7 @@ app.put(BASE_API_PATH + "/contacts/:name", function (request, response) {
 
 //DELETE over a collection
 app.delete(BASE_API_PATH + "/contacts", function (request, response) {
-   contacts.length=0;
+   goals.length=0;
    response.sendStatus(204);
     
     
@@ -138,11 +155,11 @@ app.delete(BASE_API_PATH + "/contacts", function (request, response) {
 //DELETE over a single resource
 app.delete(BASE_API_PATH + "/contacts/:name", function (request, response) {
      var name = request.params.name;
-     var l1 = contacts.length;
-     contacts = contacts.filter((c)=>{
+     var l1 = goals.length;
+     goals = goals.filter((c)=>{
          return c.name!==name;
      });
-     var l2= contacts.length;
+     var l2= goals.length;
      
      if(l1===l2){
          response.sendStatus(404);
