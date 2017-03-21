@@ -21,17 +21,27 @@ app.use(helmet()); //improve security
 
 //TBD
 var goals = [{
-    "name" : "Luciano",
-    "Phone" : "647132052",
-    "email" : "lucianodelvallecano@gmail.com"
+    "city" : "spain",
+    "hour" : "15:30",
+    "goals_first_team" : "2",
+    "goals_second_team" : "1",
+    "team_a" : "madrid",
+    "team_b" : "barça"
+    
 },{
-     "name" : "Toldo",
-    "Phone" : "647125456",
-    "email" : "toldo@gmail.com"
+    "city" : "seville",
+    "hour" : "17:40",
+    "goals_first_team" : "1",
+    "goals_second_team" : "0",
+    "team_a" : "sevilla",
+    "team_b" : "betis"
 },{
-     "name" : "Yopis",
-    "Phone" : "645789123",
-    "email" : "yopis@gmail.com"
+    "city" : "malaga",
+    "hour" : "17:40",
+    "goals_first_team" : "0",
+    "goals_second_team" : "1",
+    "team_a" : "malaga",
+    "team_b" : "español"
 }];
 
 var corners = [{
