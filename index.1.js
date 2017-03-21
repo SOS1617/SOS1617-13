@@ -106,6 +106,13 @@ app.get("/", function (request, response) {
     
 });
 
+// Base GET victory
+app.get("/", function (request, response) {
+    console.log("INFO: Redirecting to /victory");
+    response.redirect(301, BASE_API_PATH + "/victory");
+    
+});
+
 
 
 // GET a collection goals
@@ -119,6 +126,13 @@ app.get(BASE_API_PATH + "/goals", function (request, response) {
 app.get(BASE_API_PATH + "/corners", function (request, response) {
     console.log("INFO : new request to /corners");
     response.send(corners);
+    //TBD
+});
+
+// GET a collection corners
+app.get(BASE_API_PATH + "/victory", function (request, response) {
+    console.log("INFO : new request to /victory");
+    response.send(victory);
     //TBD
 });
 
