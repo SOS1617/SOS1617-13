@@ -33,18 +33,25 @@ var goals = [{
     "Phone" : "645789123",
     "email" : "yopis@gmail.com"
 }];
+
 var corners = [{
-    "name" : "Luciano",
-    "Phone" : "647132052",
-    "email" : "lucianodelvallecano@gmail.com"
+    "country" : "Spain",
+    "year" : "2010",
+    "corner1" : "2",
+    "corne2" : "1",
+    "corner3" : "0"
 },{
-     "name" : "Toldo",
-    "Phone" : "647125456",
-    "email" : "toldo@gmail.com"
+    "country" : "Germany",
+    "year" : "2011",
+    "corner1" : "1",
+    "corne2" : "0",
+    "corner3" : "4"
 },{
-     "name" : "Yopis",
-    "Phone" : "645789123",
-    "email" : "yopis@gmail.com"
+    "country" : "Greece",
+    "year" : "2014",
+    "corner1" : "5",
+    "corne2" : "3",
+    "corner3" : "3"
 }];
 
 
