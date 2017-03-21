@@ -64,6 +64,33 @@ var corners = [{
     "corner3" : "3"
 }];
 
+var victory = [{
+    "city" : "seville",
+    "foul" : "3",
+    "goal_total" : "100",
+    "loose" : "1",
+    "victory" : "1",
+    "year" : "2010",
+    "name" : "betis"
+    
+},{
+     "city" : "madrid",
+    "foul" : "5",
+    "goal_total" : "150",
+    "loose" : "3",
+    "victory" : "34",
+    "year" : "2015",
+    "name" : "madrid"
+},{
+     "city" : "barcelona",
+    "foul" : "6",
+    "goal_total" : "200",
+    "loose" : "3",
+    "victory" : "2",
+    "year" : "2016",
+    "name" : "barcelona"
+}];
+
 
 // Base GET goals
 app.get("/", function (request, response) {
