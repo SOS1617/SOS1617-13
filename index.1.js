@@ -256,32 +256,32 @@ app.get(BASE_API_PATH + "/results/:city", function (request, response) {
 });
 
 
-//POST over a collection
+//POST over a collection goals
 app.post(BASE_API_PATH + "/goals", function (request, response) {
-    var newContact = request.body;
-    if (!newContact) {
-        console.log("WARNING: New POST request to /contacts/ without contact, sending 400...");
+    var newGoals = request.body;
+    if (!newGoals) {
+        console.log("WARNING: New POST request to /goals/ without contact, sending 400...");
         response.sendStatus(400); // bad request
     } else {
-        console.log("INFO: New POST request to /contacts with body: " + JSON.stringify(newContact, 2, null));
-        if (!newContact.name || !newContact.phone || !newContact.email) {
-            console.log("WARNING: The contact " + JSON.stringify(newContact, 2, null) + " is not well-formed, sending 422...");
+        console.log("INFO: New POST request to /goals with body: " + JSON.stringify(newGoals, 2, null));
+        if (!newGoals.city || !newGoals.hour || !newGoals.email || !newGoals.goals_first_team || !newGoals.goals_second_team || !newGoals.phone || !newGoals.email) {
+            console.log("WARNING: The goal " + JSON.stringify(newGoals, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {
-            db.find({}, function (err, contacts) {
+            db.find({}, function (err, goals) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
                 } else {
-                    var contactsBeforeInsertion = contacts.filter((contact) => {
-                        return (contact.name.localeCompare(newContact.name, "en", {'sensitivity': 'base'}) === 0);
+                    var contactsBeforeInsertion = goals.filter((goal) => {
+                        return (goal.citylocaleCompare(newGoals.city, "en", {'sensitivity': 'base'}) === 0);
                     });
                     if (contactsBeforeInsertion.length > 0) {
-                        console.log("WARNING: The contact " + JSON.stringify(newContact, 2, null) + " already extis, sending 409...");
+                        console.log("WARNING: The goal " + JSON.stringify(newGoals, 2, null) + " already extis, sending 409...");
                         response.sendStatus(409); // conflict
                     } else {
-                        console.log("INFO: Adding contact " + JSON.stringify(newContact, 2, null));
-                        db.insert(newContact);
+                        console.log("INFO: Adding goal " + JSON.stringify(newGoals, 2, null));
+                        db.insert(newGoals);
                         response.sendStatus(201); // created
                     }
                 }
@@ -291,59 +291,102 @@ app.post(BASE_API_PATH + "/goals", function (request, response) {
 });
 
 
-//POST over a single resource
+//POST over a single resource goal
 app.post(BASE_API_PATH + "/goals/:city", function (request, response) {
+    var city = request.params.city;
+    console.log("WARNING: New POST request to /goals/" + city + ", sending 405...");
     response.sendStatus(405);
 });
 
 
-//PUT over a collection
+//PUT over a collection goals
 app.put(BASE_API_PATH + "/goals", function (request, response) {
+    console.log("WARNING: New PUT request to /goals, sending 405...");
     response.sendStatus(405);
 });
 
 
-//PUT over a single resource
+//PUT over a single resource goals
 app.put(BASE_API_PATH + "/goals/:city", function (request, response) {
-    var updatedContact = request.body;
-    var nameParam = request.params.name;
-    goals =city.map((c)=>{
-        if(c.name===nameParam){
-            return
-        }else{
-            return c;
+    var updatedCity = request.body;
+    var city = request.params.city;
+    if (!updatedCity) {
+        console.log("WARNING: New PUT request to /goals/ without goal, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New PUT request to /goals/" + city + " with data " + JSON.stringify(updatedCity, 2, null));
+         if (!updatedCity.city || !updatedCity.hour || !updatedCity.email || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.phone || !updatedCity.email) {
+            console.log("WARNING: The goal " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        } else {
+            db.find({}, function (err, goals) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                } else {
+                    var contactsBeforeInsertion = goals.filter((goal) => {
+                        return (goal.city.localeCompare(city, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (contactsBeforeInsertion.length > 0) {
+                        db.update({city: city}, updatedCity);
+                        console.log("INFO: Modifying goal with city " + city + " with data " + JSON.stringify(updatedCity, 2, null));
+                        response.send(updatedCity); // return the updated goal
+                    } else {
+                        console.log("WARNING: There are not any goal with city " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
+    }
+});
+
+
+//DELETE over a collection goals
+app.delete(BASE_API_PATH + "/goals", function (request, response) {
+    console.log("INFO: New DELETE request to /goals");
+    db.remove({}, {multi: true}, function (err, numRemoved) {
+        if (err) {
+            console.error('WARNING: Error removing data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            if (numRemoved > 0) {
+                console.log("INFO: All the goals (" + numRemoved + ") have been succesfully deleted, sending 204...");
+                response.sendStatus(204); // no content
+            } else {
+                console.log("WARNING: There are no goals to delete");
+                response.sendStatus(404); // not found
+            }
         }
     });
-    response.send(updatedContact);
 });
 
 
-//DELETE over a collection
-app.delete(BASE_API_PATH + "/contacts", function (request, response) {
-   goals.length=0;
-   response.sendStatus(204);
-    
-    
+//DELETE over a single resource goals
+app.delete(BASE_API_PATH + "/goals/:city", function (request, response) {
+    var city = request.params.city;
+    if (!city) {
+        console.log("WARNING: New DELETE request to /goals/:city without city, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New DELETE request to /contacts/" + city);
+        db.remove({city: city}, {}, function (err, numRemoved) {
+            if (err) {
+                console.error('WARNING: Error removing data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+                console.log("INFO: Contacts removed: " + numRemoved);
+                if (numRemoved === 1) {
+                    console.log("INFO: The contact with city " + city + " has been succesfully deleted, sending 204...");
+                    response.sendStatus(204); // no content
+                } else {
+                    console.log("WARNING: There are no goals to delete");
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
 });
 
-
-//DELETE over a single resource
-app.delete(BASE_API_PATH + "/contacts/:name", function (request, response) {
-     var name = request.params.name;
-     var l1 = goals.length;
-     goals = goals.filter((c)=>{
-         return c.name!==name;
-     });
-     var l2= goals.length;
-     
-     if(l1===l2){
-         response.sendStatus(404);
-         
-         
-     }else{
-         response.sendStatus(204)
-     }
-     
 });
 
-});
