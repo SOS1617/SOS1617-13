@@ -8,23 +8,23 @@ var path = require("path");
 
 var MongoClient = require("mongodb").MongoClient;
 
-var mdbURL= "mongodb://SOS1617-13:sos1617@ds137730.mlab.com:37730/sandbox";
+var mdbURL= "mongodb://sos1617-13:sos1617-13@ds137730.mlab.com:37730/sandbox";
 
 
 var port = (process.env.PORT || 10000);
 var BASE_API_PATH = "/api/v1";
 
-var db;
+var db, db1, db2;
 
-MongoClient.connect(mdbURL, {
-    native_parser: true
-}, function(err, database) {
+MongoClient.connect(mdbURL, { native_parser: true}, function(err, database) {
     if (err) {
         console.log("cant not connect to db:" + err);
         process.exit(1);
 
     }
     db = database.collection("goals");
+    db2 = database.collection("results");
+    db1 = database.collection("corners");
     
     app.listen(port, ()=> {
   console.log("Magic is happening on port " + port);  
@@ -151,7 +151,7 @@ app.get(BASE_API_PATH + "/goals", function (request, response) {
 // GET a collection corners
 app.get(BASE_API_PATH + "/corners", function (request, response) {
     console.log("INFO : new request to /corners");
-    db.find({}).toArray( function (err, corners) {
+    db1.find({}).toArray( function (err, corners) {
         if (err) {
             console.error('WARNING: Error getting data from DB');
             response.sendStatus(500); // internal server error
@@ -166,7 +166,7 @@ app.get(BASE_API_PATH + "/corners", function (request, response) {
 // GET a collection victorys
 app.get(BASE_API_PATH + "/results", function (request, response) {
     console.log("INFO : new request to /results");
-     db.find({}).toArray( function (err, results) {
+     db2.find({}).toArray( function (err, results) {
         if (err) {
             console.error('WARNING: Error getting data from DB');
             response.sendStatus(500); // internal server error
@@ -214,7 +214,7 @@ app.get(BASE_API_PATH + "/corners/:country", function (request, response) {
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New GET request to /corners/" + country);
-        db.find({"country" : country}, function (err, filteredContacts) {
+        db1.find({"country" : country}, function (err, filteredContacts) {
             if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
@@ -241,7 +241,7 @@ app.get(BASE_API_PATH + "/results/:city", function (request, response) {
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New GET request to /results/" + city);
-        db.find({"city" : city}, function (err, filteredContacts) {
+        db2.find({"city" : city}, function (err, filteredContacts) {
             if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
@@ -307,7 +307,7 @@ app.post(BASE_API_PATH + "/corners", function (request, response) {
             console.log("WARNING: The corner " + JSON.stringify(newCorners, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {
-            db.find({}, function (err, corners) {
+            db1.find({}, function (err, corners) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
@@ -341,7 +341,7 @@ app.post(BASE_API_PATH + "/results", function (request, response) {
             console.log("WARNING: The result " + JSON.stringify(newResults, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {
-            db.find({}, function (err, results) {
+            db2.find({}, function (err, results) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
@@ -439,7 +439,7 @@ app.put(BASE_API_PATH + "/goals/:city", function (request, response) {
         }
     }
 });
-
+/*
 //PUT over a single resource corners
 app.put(BASE_API_PATH + "/corners/:country", function (request, response) {
     var updatedCountry = request.body;
@@ -473,7 +473,7 @@ app.put(BASE_API_PATH + "/corners/:country", function (request, response) {
             });
         }
     }
-});
+});*/
 
 
 
