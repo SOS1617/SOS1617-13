@@ -290,6 +290,74 @@ app.post(BASE_API_PATH + "/goals", function (request, response) {
     }
 });
 
+//POST over a collection corners
+app.post(BASE_API_PATH + "/corners", function (request, response) {
+    var newCorners = request.body;
+    if (!newCorners) {
+        console.log("WARNING: New POST request to /corners/ without contact, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New POST request to /corners with body: " + JSON.stringify(newCorners, 2, null));
+        if (!newCorners.country || !newCorners.year || !newCorners.corner1 || !newCorners.corner2 || !newCorners.corner3) {
+            console.log("WARNING: The corner " + JSON.stringify(newCorners, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        } else {
+            db.find({}, function (err, corners) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                } else {
+                    var contactsBeforeInsertion = corners.filter((corner) => {
+                        return (corner.countrylocaleCompare(newCorners.country, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (contactsBeforeInsertion.length > 0) {
+                        console.log("WARNING: The corner " + JSON.stringify(newCorners, 2, null) + " already extis, sending 409...");
+                        response.sendStatus(409); // conflict
+                    } else {
+                        console.log("INFO: Adding goal " + JSON.stringify(newCorners, 2, null));
+                        db.insert(newCorners);
+                        response.sendStatus(201); // created
+                    }
+                }
+            });
+        }
+    }
+});
+
+//POST over a collection results
+app.post(BASE_API_PATH + "/results", function (request, response) {
+    var newResults = request.body;
+    if (!newResults) {
+        console.log("WARNING: New POST request to /goals/ without contact, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New POST request to /goals with body: " + JSON.stringify(newResults, 2, null));
+        if (!newResults.city || !newResults.foul || !newResults.goal_total || !newResults.loose || !newResults.victory || !newResults.year || !newResults.name) {
+            console.log("WARNING: The result " + JSON.stringify(newResults, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        } else {
+            db.find({}, function (err, results) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                } else {
+                    var contactsBeforeInsertion = results.filter((result) => {
+                        return (result.citylocaleCompare(newResults.city, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (contactsBeforeInsertion.length > 0) {
+                        console.log("WARNING: The result " + JSON.stringify(newResults, 2, null) + " already extis, sending 409...");
+                        response.sendStatus(409); // conflict
+                    } else {
+                        console.log("INFO: Adding result " + JSON.stringify(newResults, 2, null));
+                        db.insert(newResults);
+                        response.sendStatus(201); // created
+                    }
+                }
+            });
+        }
+    }
+});
+
 
 //POST over a single resource goal
 app.post(BASE_API_PATH + "/goals/:city", function (request, response) {
@@ -298,10 +366,36 @@ app.post(BASE_API_PATH + "/goals/:city", function (request, response) {
     response.sendStatus(405);
 });
 
+//POST over a single resource corners
+app.post(BASE_API_PATH + "/corners/:country", function (request, response) {
+    var country = request.params.country;
+    console.log("WARNING: New POST request to /corners/" + country + ", sending 405...");
+    response.sendStatus(405);
+});
+
+//POST over a single resource results
+app.post(BASE_API_PATH + "/results/:city", function (request, response) {
+    var city = request.params.city;
+    console.log("WARNING: New POST request to /results/" + city + ", sending 405...");
+    response.sendStatus(405);
+});
+
 
 //PUT over a collection goals
 app.put(BASE_API_PATH + "/goals", function (request, response) {
     console.log("WARNING: New PUT request to /goals, sending 405...");
+    response.sendStatus(405);
+});
+
+//PUT over a collection corners
+app.put(BASE_API_PATH + "/corners", function (request, response) {
+    console.log("WARNING: New PUT request to /corners, sending 405...");
+    response.sendStatus(405);
+});
+
+//PUT over a collection results
+app.put(BASE_API_PATH + "/results", function (request, response) {
+    console.log("WARNING: New PUT request to /results, sending 405...");
     response.sendStatus(405);
 });
 
@@ -340,6 +434,42 @@ app.put(BASE_API_PATH + "/goals/:city", function (request, response) {
         }
     }
 });
+
+//PUT over a single resource corners
+app.put(BASE_API_PATH + "/corners/:country", function (request, response) {
+    var updatedCountry = request.body;
+    var country = request.params.country;
+    if (!updatedCountry) {
+        console.log("WARNING: New PUT request to /corners/ without corner, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New PUT request to /corners/" + country + " with data " + JSON.stringify(updatedCountry, 2, null));
+         if (!updatedCountry.country || !updatedCountry.year || !updatedCountry.corner1 || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.phone || !updatedCity.email) {
+            console.log("WARNING: The goal " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        } else {
+            db.find({}, function (err, goals) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                } else {
+                    var contactsBeforeInsertion = goals.filter((goal) => {
+                        return (goal.city.localeCompare(city, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (contactsBeforeInsertion.length > 0) {
+                        db.update({city: city}, updatedCity);
+                        console.log("INFO: Modifying goal with city " + city + " with data " + JSON.stringify(updatedCity, 2, null));
+                        response.send(updatedCity); // return the updated goal
+                    } else {
+                        console.log("WARNING: There are not any goal with city " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
+    }
+});
+
 
 
 //DELETE over a collection goals
