@@ -4,23 +4,37 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var helmet = require("helmet");
+var path = require("path");
+
+var MongoClient = require("mongodb").MongoClient;
+
+var mdbURL= "mongodb://mongodb://luciano:aspire5536@ds137760.mlab.com:37760/lucianodb";
+
 
 var port = (process.env.PORT || 10000);
 var BASE_API_PATH = "/api/v1";
+
+var db;
+
+MongoClient.content(mdbURL, {native_parser:true},function (err,datbase){
+    if(err){
+        console.log(" Can not conect to db: "+err);
+        process.exit(1)
+    }
+    db = database.collection("goals");
+    
+    app.listen(port, ()=> {
+  console.log("Magic is happening on port " + port);  
+
+});
 
 var app = express();
 
 app.use(bodyParser.json()); //use default json enconding/decoding
 app.use(helmet()); //improve security
 
-// @see: https://curlbuilder.com/
-// @see: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-// @see: https://i.stack.imgur.com/whhD1.png
-// @see: https://blog.agetic.gob.bo/2016/07/elegir-un-codigo-de-estado-http-deja-de-hacerlo-dificil/
-// sobre una coleccion no podemos hacer put y sobre un recurso no posdemos hacer post, los codigos de estado http dicen como se tratan 
 
-//TBD
-var goals = [{
+/*var goals = [{
     "city" : "spain",
     "hour" : "15:30",
     "goals_first_team" : "2",
@@ -89,7 +103,7 @@ var victory = [{
     "victory" : "2",
     "year" : "2016",
     "name" : "barcelona"
-}];
+}];*/
 
 
 // Base GET goals
@@ -118,8 +132,15 @@ app.get("/", function (request, response) {
 // GET a collection goals
 app.get(BASE_API_PATH + "/goals", function (request, response) {
     console.log("INFO : new request to /goals");
-    response.send(goals);
-    //TBD
+     db.find({}).toArray( function (err, goals) {
+        if (err) {
+            console.error('WARNING: Error getting data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            console.log("INFO: Sending goals: " + JSON.stringify(goals, 2, null));
+            response.send(goals);
+        }
+    });
 });
 
 // GET a collection corners
@@ -129,7 +150,7 @@ app.get(BASE_API_PATH + "/corners", function (request, response) {
     //TBD
 });
 
-// GET a collection corners
+// GET a collection victory
 app.get(BASE_API_PATH + "/victory", function (request, response) {
     console.log("INFO : new request to /victory");
     response.send(victory);
@@ -138,15 +159,29 @@ app.get(BASE_API_PATH + "/victory", function (request, response) {
 
 
 
-// GET a single resource
+// GET a single resource goals city
 app.get(BASE_API_PATH + "/goals/:city", function (request, response) {
-    var name = request.params.name;
+    var city = request.params.city;
     var filteredContact = goals.filter((c)=>{
        return c.city === city;
-        //esto es una opcion, la de arriba pero la mejor forma de comparar es la siguiente
-       // return c.name.localeCompare(name, "en" ,{"sensitivy":"base"})===0;
     })
-    //TBD
+    response.send(filteredContact[0]);
+});
+
+// GET a single resource corners country
+app.get(BASE_API_PATH + "/corners/:country", function (request, response) {
+    var country = request.params.country;
+    var filteredContact = corners.filter((c)=>{
+       return c.country === country;
+    })
+    response.send(filteredContact[0]);
+});
+
+// GET a single resource victory
+app.get(BASE_API_PATH + "/victory/:city", function (request, response) {
+    var city = request.params.city;
+    var filteredContact = victory.filter((c)=>{
+    })
     response.send(filteredContact[0]);
 });
 
@@ -212,6 +247,4 @@ app.delete(BASE_API_PATH + "/contacts/:name", function (request, response) {
      
 });
 
-
-app.listen(port);
-console.log("Magic is happening on port " + port);
+});
