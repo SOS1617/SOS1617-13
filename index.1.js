@@ -8,7 +8,7 @@ var path = require("path");
 
 var MongoClient = require("mongodb").MongoClient;
 
-var mdbURL= "mongodb://SOS1617-13:sos1617@ds137730.mlab.com:37730/sandbox";
+var mdbURL= "mongodb://sos1617-13:sos1617-13@ds137730.mlab.com:37730/sandbox";
 
 
 var port = (process.env.PORT || 10000);
@@ -450,23 +450,23 @@ app.put(BASE_API_PATH + "/corners/:country", function (request, response) {
     } else {
         console.log("INFO: New PUT request to /corners/" + country + " with data " + JSON.stringify(updatedCountry, 2, null));
          if (!updatedCountry.country || !updatedCountry.year || !updatedCountry.corner1 || !updatedCountry.corner2 || !updatedCountry.corner3) {
-            console.log("WARNING: The goal " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
+            console.log("WARNING: The corner " + JSON.stringify(updatedCountry, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {
-            db.find({}, function (err, goals) {
+            db.find({}, function (err, corners) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
                 } else {
-                    var contactsBeforeInsertion = goals.filter((goal) => {
-                        return (goal.city.localeCompare(city, "en", {'sensitivity': 'base'}) === 0);
+                    var cornersBeforeInsertion = corners.filter((corner) => {
+                        return (corner.country.localeCompare(country, "en", {'sensitivity': 'base'}) === 0);
                     });
-                    if (contactsBeforeInsertion.length > 0) {
-                        db.update({city: city}, updatedCity);
-                        console.log("INFO: Modifying goal with city " + city + " with data " + JSON.stringify(updatedCity, 2, null));
-                        response.send(updatedCity); // return the updated goal
+                    if (cornersBeforeInsertion.length > 0) {
+                        db.update({country: country}, updatedCountry);
+                        console.log("INFO: Modifying goal with city " + country + " with data " + JSON.stringify(updatedCountry, 2, null));
+                        response.send(updatedCountry); // return the updated country
                     } else {
-                        console.log("WARNING: There are not any goal with city " + city);
+                        console.log(country);
                         response.sendStatus(404); // not found
                     }
                 }
@@ -475,6 +475,41 @@ app.put(BASE_API_PATH + "/corners/:country", function (request, response) {
     }
 });
 
+
+//PUT over a single resource results
+app.put(BASE_API_PATH + "/results/:city", function (request, response) {
+    var updatedCity = request.body;
+    var city = request.params.city;
+    if (!updatedCity) {
+        console.log("WARNING: New PUT request to /results/ without goal, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New PUT request to /results/" + city + " with data " + JSON.stringify(updatedCity, 2, null));
+         if (!updatedCity.city || !updatedCity.foul || !updatedCity.goal_total || !updatedCity.loose || !updatedCity.victory || !updatedCity.year || !updatedCity.name) {
+            console.log("WARNING: The result " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        } else {
+            db.find({}, function (err, results) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                } else {
+                    var resultsBeforeInsertion = results.filter((result) => {
+                        return (result.city.localeCompare(city, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (resultsBeforeInsertion.length > 0) {
+                        db.update({city: city}, updatedCity);
+                        console.log("INFO: Modifying goal with city " + city + " with data " + JSON.stringify(updatedCity, 2, null));
+                        response.send(updatedCity); // return the updated goal
+                    } else {
+                        console.log("WARNING: There are not any result with city " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
+    }
+});
 
 
 //DELETE over a collection goals
@@ -497,6 +532,45 @@ app.delete(BASE_API_PATH + "/goals", function (request, response) {
 });
 
 
+//DELETE over a collection corners
+app.delete(BASE_API_PATH + "/corners", function (request, response) {
+    console.log("INFO: New DELETE request to /corners");
+    db.remove({}, {multi: true}, function (err, numRemoved) {
+        if (err) {
+            console.error('WARNING: Error removing data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            if (numRemoved > 0) {
+                console.log("INFO: All the corners (" + numRemoved + ") have been succesfully deleted, sending 204...");
+                response.sendStatus(204); // no content
+            } else {
+                console.log("WARNING: There are no corners to delete");
+                response.sendStatus(404); // not found
+            }
+        }
+    });
+});
+
+//DELETE over a collection results
+app.delete(BASE_API_PATH + "/results", function (request, response) {
+    console.log("INFO: New DELETE request to /results");
+    db.remove({}, {multi: true}, function (err, numRemoved) {
+        if (err) {
+            console.error('WARNING: Error removing data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            if (numRemoved > 0) {
+                console.log("INFO: All the results (" + numRemoved + ") have been succesfully deleted, sending 204...");
+                response.sendStatus(204); // no content
+            } else {
+                console.log("WARNING: There are no results to delete");
+                response.sendStatus(404); // not found
+            }
+        }
+    });
+});
+
+
 //DELETE over a single resource goals
 app.delete(BASE_API_PATH + "/goals/:city", function (request, response) {
     var city = request.params.city;
@@ -512,10 +586,62 @@ app.delete(BASE_API_PATH + "/goals/:city", function (request, response) {
             } else {
                 console.log("INFO: Contacts removed: " + numRemoved);
                 if (numRemoved === 1) {
-                    console.log("INFO: The contact with city " + city + " has been succesfully deleted, sending 204...");
+                    console.log("INFO: The goal with city " + city + " has been succesfully deleted, sending 204...");
                     response.sendStatus(204); // no content
                 } else {
                     console.log("WARNING: There are no goals to delete");
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
+});
+
+//DELETE over a single resource corners
+app.delete(BASE_API_PATH + "/corners/:city", function (request, response) {
+    var country = request.params.country;
+    if (!country) {
+        console.log("WARNING: New DELETE request to /corners/:country without country, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New DELETE request to /contacts/" + country);
+        db.remove({city: country}, {}, function (err, numRemoved) {
+            if (err) {
+                console.error('WARNING: Error removing data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+                console.log("INFO: Contacts removed: " + numRemoved);
+                if (numRemoved === 1) {
+                    console.log("INFO: The corners with country " + country + " has been succesfully deleted, sending 204...");
+                    response.sendStatus(204); // no content
+                } else {
+                    console.log("WARNING: There are no corners to delete");
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
+});
+
+//DELETE over a single resource results
+app.delete(BASE_API_PATH + "/results/:city", function (request, response) {
+    var city = request.params.city;
+    if (!city) {
+        console.log("WARNING: New DELETE request to /results/:city without city, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New DELETE request to /results/" + city);
+        db.remove({city: city}, {}, function (err, numRemoved) {
+            if (err) {
+                console.error('WARNING: Error removing data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+                console.log("INFO: results removed: " + numRemoved);
+                if (numRemoved === 1) {
+                    console.log("INFO: The results with city " + city + " has been succesfully deleted, sending 204...");
+                    response.sendStatus(204); // no content
+                } else {
+                    console.log("WARNING: There are no results to delete");
                     response.sendStatus(404); // not found
                 }
             }
