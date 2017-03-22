@@ -78,7 +78,7 @@ var corners = [{
     "corner3" : "3"
 }];
 
-var victory = [{
+var results = [{
     "city" : "seville",
     "foul" : "3",
     "goal_total" : "100",
@@ -120,10 +120,10 @@ app.get("/", function (request, response) {
     
 });
 
-// Base GET victory
+// Base GET results
 app.get("/", function (request, response) {
-    console.log("INFO: Redirecting to /victory");
-    response.redirect(301, BASE_API_PATH + "/victory");
+    console.log("INFO: Redirecting to /results");
+    response.redirect(301, BASE_API_PATH + "/results");
     
 });
 
@@ -146,15 +146,30 @@ app.get(BASE_API_PATH + "/goals", function (request, response) {
 // GET a collection corners
 app.get(BASE_API_PATH + "/corners", function (request, response) {
     console.log("INFO : new request to /corners");
-    response.send(corners);
+    db.find({}).toArray( function (err, corners) {
+        if (err) {
+            console.error('WARNING: Error getting data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            console.log("INFO: Sending gocornersals: " + JSON.stringify(corners, 2, null));
+            response.send(corners);
+        }
+    });
     //TBD
 });
 
-// GET a collection victory
-app.get(BASE_API_PATH + "/victory", function (request, response) {
-    console.log("INFO : new request to /victory");
-    response.send(victory);
-    //TBD
+// GET a collection victorys
+app.get(BASE_API_PATH + "/results", function (request, response) {
+    console.log("INFO : new request to /results");
+     db.find({}).toArray( function (err, results) {
+        if (err) {
+            console.error('WARNING: Error getting data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            console.log("INFO: Sending results: " + JSON.stringify(results, 2, null));
+            response.send(results);
+        }
+    });
 });
 
 
@@ -162,33 +177,117 @@ app.get(BASE_API_PATH + "/victory", function (request, response) {
 // GET a single resource goals city
 app.get(BASE_API_PATH + "/goals/:city", function (request, response) {
     var city = request.params.city;
-    var filteredContact = goals.filter((c)=>{
-       return c.city === city;
-    })
-    response.send(filteredContact[0]);
+     if (!city) {
+        console.log("WARNING: New GET request to /goals/:city without city, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /goals/" + city);
+        db.find({"city" : city}, function (err, filteredContacts) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+             
+                if (filteredContacts.length > 0) {
+                    var goals = filteredContacts[0]; //since we expect to have exactly ONE goals with this city
+                    console.log("INFO: Sending goals: " + JSON.stringify(goals, 2, null));
+                    response.send(goals);
+                } else {
+                    console.log("WARNING: There are not any contact with city " + city);
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
 });
 
 // GET a single resource corners country
 app.get(BASE_API_PATH + "/corners/:country", function (request, response) {
     var country = request.params.country;
-    var filteredContact = corners.filter((c)=>{
-       return c.country === country;
-    })
-    response.send(filteredContact[0]);
+      if (!country) {
+        console.log("WARNING: New GET request to /corners/:country without country, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /corners/" + country);
+        db.find({"country" : country}, function (err, filteredContacts) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+             
+                if (filteredContacts.length > 0) {
+                    var corners = filteredContacts[0]; //since we expect to have exactly ONE corners with this city
+                    console.log("INFO: Sending corners: " + JSON.stringify(corners, 2, null));
+                    response.send(corners);
+                } else {
+                    console.log("WARNING: There are not any contact with country " + country);
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
 });
 
-// GET a single resource victory
-app.get(BASE_API_PATH + "/victory/:city", function (request, response) {
+// GET a single resource results
+app.get(BASE_API_PATH + "/results/:city", function (request, response) {
     var city = request.params.city;
-    var filteredContact = victory.filter((c)=>{
-    })
-    response.send(filteredContact[0]);
+      if (!city) {
+        console.log("WARNING: New GET request to /results/:city without city, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /results/" + city);
+        db.find({"city" : city}, function (err, filteredContacts) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+             
+                if (filteredContacts.length > 0) {
+                    var results = filteredContacts[0]; //since we expect to have exactly ONE results with this city
+                    console.log("INFO: Sending results: " + JSON.stringify(results, 2, null));
+                    response.send(results);
+                } else {
+                    console.log("WARNING: There are not any contact with city " + city);
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
 });
 
 
 //POST over a collection
 app.post(BASE_API_PATH + "/goals", function (request, response) {
-    //TBD
+    var newContact = request.body;
+    if (!newContact) {
+        console.log("WARNING: New POST request to /contacts/ without contact, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New POST request to /contacts with body: " + JSON.stringify(newContact, 2, null));
+        if (!newContact.name || !newContact.phone || !newContact.email) {
+            console.log("WARNING: The contact " + JSON.stringify(newContact, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        } else {
+            db.find({}, function (err, contacts) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                } else {
+                    var contactsBeforeInsertion = contacts.filter((contact) => {
+                        return (contact.name.localeCompare(newContact.name, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (contactsBeforeInsertion.length > 0) {
+                        console.log("WARNING: The contact " + JSON.stringify(newContact, 2, null) + " already extis, sending 409...");
+                        response.sendStatus(409); // conflict
+                    } else {
+                        console.log("INFO: Adding contact " + JSON.stringify(newContact, 2, null));
+                        db.insert(newContact);
+                        response.sendStatus(201); // created
+                    }
+                }
+            });
+        }
+    }
 });
 
 
