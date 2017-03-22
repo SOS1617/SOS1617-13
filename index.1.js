@@ -16,10 +16,13 @@ var BASE_API_PATH = "/api/v1";
 
 var db;
 
-MongoClient.content(mdbURL, {native_parser:true},function (err,database){
-    if(err){
-        console.log(" Can not conect to db: "+err);
-        process.exit(1)
+MongoClient.connect(mdbURL, {
+    native_parser: true
+}, function(err, database) {
+    if (err) {
+        console.log("cant not connect to db:" + err);
+        process.exit(1);
+
     }
     db = database.collection("goals");
     
@@ -446,7 +449,7 @@ app.put(BASE_API_PATH + "/corners/:country", function (request, response) {
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New PUT request to /corners/" + country + " with data " + JSON.stringify(updatedCountry, 2, null));
-         if (!updatedCountry.country || !updatedCountry.year || !updatedCountry.corner1 || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.phone || !updatedCity.email) {
+         if (!updatedCountry.country || !updatedCountry.year || !updatedCountry.corner1 || !updatedCountry.corner2 || !updatedCountry.corner3) {
             console.log("WARNING: The goal " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {
