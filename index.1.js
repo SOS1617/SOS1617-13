@@ -16,7 +16,7 @@ var BASE_API_PATH = "/api/v1";
 
 var db;
 
-MongoClient.content(mdbURL, {native_parser:true},function (err,datbase){
+MongoClient.content(mdbURL, {native_parser:true},function (err,database){
     if(err){
         console.log(" Can not conect to db: "+err);
         process.exit(1)
