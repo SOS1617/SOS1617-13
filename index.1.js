@@ -25,7 +25,9 @@ MongoClient.content(mdbURL, {native_parser:true},function (err,database){
     
     app.listen(port, ()=> {
   console.log("Magic is happening on port " + port);  
+    
 
+});
 });
 
 var app = express();
@@ -518,5 +520,5 @@ app.delete(BASE_API_PATH + "/goals/:city", function (request, response) {
     }
 });
 
-});
+
 
