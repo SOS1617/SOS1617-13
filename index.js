@@ -150,7 +150,7 @@ app.post(BASE_API_PATH + "/goals", function (request, response) {
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New POST request to /goals with body: " + JSON.stringify(newGoals, 2, null));
-        if (!newGoals.city || !newGoals.hour || !newGoals.email || !newGoals.goals_first_team || !newGoals.goals_second_team || !newGoals.phone || !newGoals.email) {
+        if (!newGoals.city || !newGoals.hour ||  !newGoals.goals_first_team || !newGoals.goals_second_team || !newGoals.team_a || !newGoals.team_b) {
             console.log("WARNING: The goal " + JSON.stringify(newGoals, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {
@@ -199,7 +199,7 @@ app.put(BASE_API_PATH + "/goals/:city", function (request, response) {
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New PUT request to /goals/" + city + " with data " + JSON.stringify(updatedCity, 2, null));
-         if (!updatedCity.city || !updatedCity.hour || !updatedCity.email || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.phone || !updatedCity.email) {
+         if (!updatedCity.city || !updatedCity.hour  || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.team_a || !updatedCity.team_b) {
             console.log("WARNING: The goal " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {

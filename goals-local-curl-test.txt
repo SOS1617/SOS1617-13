@@ -1,28 +1,50 @@
 Luciano
 
 
-1.GET : 
+1.GET a la ruta base (Devuelve una lista con todos los recursos): 
+
 
 curl -v -XGET -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
 
-2.POST 
+
+2.GET a un recurso (Devuelve dicho recurso): 
+
+
+curl -v -XGET -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goal/seville'
+
+
+3.POST a la ruta base (Crea un nuevo recurso):
+
+
+curl -v -XPOST -H 'city: cadiz' -H 'hour: 17:30' -H 'goals_first_team: 2' -H 'goals_second_team: 1' -H 'team_a: almeria' -H 'team_b: cadiz' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
+
+
+4.POST a un recurso (Nos tiene que dar un error de método no permitido):
+
+curl -v -XPOST -H 'city: seville' -H 'hour: 17:30' -H 'goals_first_team: 2' -H 'goals_second_team: 1' -H 'team_a: sevilla' -H 'team_b: betis' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/sevilla'
 
 
 
-3.Get a colección
+5. DELETE a la ruta base (borra todos los recursos):
+
+curl -v -XDELETE  "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
+
+6. DELETE a un recurso (borra ese recurso):
 
 
-
-4. Delete 
-
-curl -v -XDELETE -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
-
-5. put
-
-curl -v -XPUT -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
-
-6.post recurso
+curl -v -XDELETE  "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/madrid'
 
 
+7. PUT a la ruta base (Debe dar un error de método no permitido):
 
-7.put collecion
+curl -v -XPUT -H 'city: seville' -H 'hour: 17:30' -H 'goals_first_team: 2' -H 'goals_second_team: 1' -H 'team_a: seville' -H 'team_b: betis' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
+
+8. PUT a un recurso (Actualiza dicho recurso):
+
+curl -v -XPUT -H 'city: seville' -H 'hour: 17:30' -H 'goals_first_team: 0' -H 'goals_second_team: 0' -H 'team_a: seville' -H 'team_b: betis' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/seville'
+
+
+9. Cargar datos inicio:
+
+Cargar datos iniciales:
+    curl -v -XGET -H 'Content-type: application/json'  'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/loadInitialData'
