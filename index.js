@@ -345,14 +345,21 @@ app.get(vic + "/loadInitialData", (request, response) => {
                 response.sendStatus(500);
             }
             else {
-                if (corners1.length == 0) {
+                    dbC.remove({});
                     dbC.insert([{
                         "country": "Spain",
                         "year": "2010",
                         "corner1": "2",
                         "corne2": "1",
                         "corner3": "0"
-                    }, {
+                    },{
+                        "country": "Spain",
+                        "year": "2011",
+                        "corner1": "2",
+                        "corne2": "1",
+                        "corner3": "0"
+                    },
+                    {
                         "country": "Germany",
                         "year": "2011",
                         "corner1": "1",
@@ -367,8 +374,8 @@ app.get(vic + "/loadInitialData", (request, response) => {
                     }])
                     
                     console.log("OK");
-                    response.sendStatus(409);
-                }
+                    response.sendStatus(200);
+                
             }
         });
     });
@@ -494,7 +501,7 @@ app.put(vic +"/:country",(request,response)=>{
     
 });
 
-//DELETE a coleccion
+//DELETE a un recurso
 
 app.delete(vic+"/:country",(request,response)=>{
     var country=request.params.country;
@@ -514,7 +521,8 @@ app.delete(vic+"/:country",(request,response)=>{
                     console.log("INFO: The corners has been succesfully deleted, sending 204...");
                     response.sendStatus(204); // no content
                 } else {
-                    console.log("WARNING: There are no goals to delete");
+                    console.log("Corners deleted: "+corners1);
+                    console.log("WARNING: There are no corners to delete");
                     response.sendStatus(404); // not found
                 }
             }
