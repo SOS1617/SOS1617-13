@@ -1,0 +1,44 @@
+Luciano
+
+
+1.GET : 
+
+
+curl -XGET -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals'
+
+
+
+
+2.POST 
+
+
+curl -XPOST -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals'
+
+
+3.Get a colección
+
+
+curl -XGET -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
+
+
+
+
+4. Delete 
+
+
+curl -XDELETE -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
+curl -v -XDELETE -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io'
+
+5. put
+
+
+curl -XPUT -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
+
+
+6.post recurso
+
+
+curl -XPOST -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
+
+
+7.put collecion
