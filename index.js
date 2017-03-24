@@ -323,6 +323,7 @@ MongoClient.connect(url, {
         process.exit(1);
 
     }
+    dbC= database.collection("corners");
 
 
 });
@@ -337,7 +338,7 @@ app.get(vic + "/loadInitialData", (request, response) => {
             console.log("cannot db");
             process.exit();
         }
-        dbC = database.collection("corners");
+        
         dbC.find({}).toArray(function(error, corners1) {
             if (error) {
                 console.error("Error data from db");
