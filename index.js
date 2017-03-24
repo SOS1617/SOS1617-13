@@ -73,6 +73,7 @@ app.get(BASE_API_PATH + "/goals", function (request, response) {
 // GET a single resource
 app.get(BASE_API_PATH + "/goals/:city", function (request, response) {
     var city = request.params.city;
+    console.log(city);
      if (!city) {
         console.log("WARNING: New GET request to /goals/:city without city, sending 400...");
         response.sendStatus(400); // bad request
@@ -83,12 +84,56 @@ app.get(BASE_API_PATH + "/goals/:city", function (request, response) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
             } else {
-             
+                console.log(filteredContacts);
                 if (filteredContacts.length > 0) {
                     var goals = filteredContacts[0]; //since we expect to have exactly ONE goals with this city
                     console.log("INFO: Sending goals: " + JSON.stringify(goals, 2, null));
                     response.send(goals);
-                } else {
+                }
+                  else if (city === "loadInitialData") {
+                    dbGoal.find({}).toArray(function(err, goals) {
+                        console.log(goals);
+                        if (err) {
+                            console.error('Error while getting data from DB');
+                        }
+                        if (goals.length === 0) {
+                            goals = [{
+                                "city" : "madrid",
+                                "hour" : "15:30",
+                                "goals_first_team" : 2,
+                                "goals_second_team" : 1,
+                                "team_a" : "madrid",
+                                "team_b" : "barça"
+                                
+                            },{
+                                "city" : "seville",
+                                "hour" : "17:40",
+                                "goals_first_team" : 1,
+                                "goals_second_team" : 0,
+                                "team_a" : "sevilla",
+                                "team_b" : "betis"
+                            },{
+                                "city" : "malaga",
+                                "hour" : "17:40",
+                                "goals_first_team" : 0,
+                                "goals_second_team" : 1,
+                                "team_a" : "malaga",
+                                "team_b" : "español"
+
+                            }];
+                            console.log(goals);
+                            dbGoal.insert(goals);
+                            response.sendStatus(201);
+                        }
+                        else {
+                            console.log("Goals has more size than 0");
+                            response.sendStatus(200);
+                        }
+                    });
+
+
+                }
+                else {
                     console.log("WARNING: There are not any contact with city " + city);
                     response.sendStatus(404); // not found
                 }
@@ -201,7 +246,7 @@ app.delete(BASE_API_PATH + "/goals", function (request, response) {
 });
 
 
-//DELETE over a single resource goals
+//DELETE over a single resource
 app.delete(BASE_API_PATH + "/goals/:city", function (request, response) {
     var city = request.params.city;
     if (!city) {

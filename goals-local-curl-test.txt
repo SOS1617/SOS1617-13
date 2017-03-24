@@ -3,7 +3,7 @@ Luciano
 
 1.GET : 
 
-
+curl -v -XGET -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
 
 2.POST 
 
@@ -15,11 +15,11 @@ Luciano
 
 4. Delete 
 
-
+curl -v -XDELETE -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
 
 5. put
 
-
+curl -v -XPUT -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
 
 6.post recurso
 
