@@ -374,7 +374,7 @@ app.get(vic + "/loadInitialData", (request, response) => {
                     }])
                     
                     console.log("OK");
-                    response.sendStatus(200);
+                    response.sendStatus(201);
                 
             }
         });
@@ -515,17 +515,12 @@ app.delete(vic+"/:country",(request,response)=>{
             if (error) {
                 console.error('WARNING: Error removing data from DB');
                 response.sendStatus(500); // internal server error
-            } else {
-                console.log("INFO: Corners removed: ");
-                if (corners1 === 1) {
-                    console.log("INFO: The corners has been succesfully deleted, sending 204...");
-                    response.sendStatus(204); // no content
-                } else {
-                    console.log("Corners deleted: "+corners1);
-                    console.log("WARNING: There are no corners to delete");
-                    response.sendStatus(404); // not found
+            }  else {
+                    
+                    console.log("deleted");
+                    response.sendStatus(200); // not found
                 }
-            }
+            
         });
     }
 });
@@ -540,11 +535,12 @@ app.delete(vic,(request,response)=>{
             console.error('WARNING: Error removing data from DB');
             response.sendStatus(500); // internal server error
         } else {
-            if (corners1 > 0) {
+            corners1=JSON.parse(corners1);
+            if (corners1.n > 0) {
                 console.log("INFO: All the corners have been succesfully deleted, sending 204...");
                 response.sendStatus(204); // no content
             } else {
-                console.log("WARNING: There are no goals to delete");
+                console.log("WARNING: There are no corners to delete");
                 response.sendStatus(404); // not found
             }
         }
