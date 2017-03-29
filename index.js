@@ -74,6 +74,7 @@ app.get(BASE_API_PATH + "/goals", function(request, response) {
 
 
 // GET a single resource
+/*
 app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
     var city = request.params.city;
     console.log(city);
@@ -148,6 +149,127 @@ app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
         });
     }
 });
+*/
+
+//Load Initial Data
+app.get(BASE_API_PATH + "/goals/loadInitialData",function(request, response) {
+    
+    dbGoal.find({}).toArray(function(err,goals){
+        
+         if (err) {
+        console.error('WARNING: Error while getting initial data from DB');
+        return 0;
+    }
+    
+      if (goals.length === 0) {
+        console.log('INFO: Empty DB, loading initial data');
+
+       goals = [{
+                                "city": "madrid",
+                                "hour": "15:30",
+                                "goals_first_team": 2,
+                                "goals_second_team": 1,
+                                "team_a": "madrid",
+                                "team_b": "barça"
+
+                            }, {
+                                "city": "seville",
+                                "hour": "17:40",
+                                "goals_first_team": 1,
+                                "goals_second_team": 0,
+                                "team_a": "sevilla",
+                                "team_b": "betis"
+                            }, {
+                                "city": "malaga",
+                                "hour": "17:40",
+                                "goals_first_team": 0,
+                                "goals_second_team": 1,
+                                "team_a": "malaga",
+                                "team_b": "español"
+
+                            }];
+        dbGoal.insert(goals);
+        response.sendStatus(201) //created
+    } else {
+        console.log('INFO: DB has ' + goals.length + ' goals ');
+    }
+});
+});
+// GET a collection de ciudades con el mismo numero de goles del primer equipo.
+
+app.get(BASE_API_PATH + "/goals/:goals_first_team", function (request, response) {
+    var goals_first_team = request.params.goals_first_team;
+    var city = request.params.goals_first_team;
+    if(isNaN(request.params.goals_first_team.charAt(0))){
+            if (!city) {
+        console.log("WARNING: New GET request to /goals/:city without name, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /city/" + city);
+        dbresult.find({city:city}).toArray(function (err, goals) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (goals.length > 0) { 
+                    var goals = goals; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
+                    response.send(goals);
+                } else {
+                    console.log("WARNING: There are not any result with city " + city);
+                    response.sendStatus(404); // not found
+                }
+        });
+}
+    }else{
+    if (!goals_first_team) {
+        console.log("WARNING: New GET request to /goals/:goals_first_team without goals_first_team, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /goals/" + goals_first_team);
+        dbresult.find({goals_first_team}).toArray(function (err, goals) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (goals.length > 0) { 
+                    var goals = goals; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
+                    response.send(goals);
+                } else {
+                    console.log("WARNING: There are not any result with goals_first_team " + goals_first_team);
+                    response.sendStatus(404); // not found
+                
+                }
+        });
+}
+}});
+
+//GET a recurso concreto con 2 parametros
+
+app.get(BASE_API_PATH + "/goals/:city/:goals_first_team", function (request, response) {
+    var city = request.params.city;
+    var goals_first_team = request.params.goals_first_team;
+    if (!city || !goals_first_team) {
+        console.log("WARNING: New GET request to /goals/:city without city or without goals_first_team, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /goals/" + city + "/" + goals_first_team);
+        dbGoal.find({city:city, $and:[{goals_first_team:goals_first_team}]}).toArray(function (err, goals) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (goals.length > 0) { 
+                    var goals = goals[0]; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
+                    response.send(goals);
+                } else {
+                    console.log("WARNING: There are not any city with city " + city +  "and goals_first_team " + goals_first_team);
+                    response.sendStatus(404); // not found
+                
+                }
+        });
+}
+});
+
 
 //POST over a collection goals
 app.post(BASE_API_PATH + "/goals", function(request, response) {
@@ -557,19 +679,20 @@ app.put(vic,(request,response)=>{
     response.sendStatus(405);
 });
 
-//"-----------------------------API RESULTS---------Yopis-----------------------------------------------";
+/*
+"-----------------------------API RESULTS------Yopis--------------------------------------------------";
 "use strict";
 /* global __dirname */
 
+/*
 
-
-var MongoClient = require('mongodb').MongoClient;
+var MongoClientresult = require('mongodb').MongoClient;
 
 var mdbURLresult = "mongodb://sos1617-13:sos1617-13@ds137730.mlab.com:37730/sandbox";
 
 var dbresult;
 
-MongoClient.connect(mdbURLresult, {
+MongoClientresult.connect(mdbURLresult, {
     native_parser: true
 }, function(err, database) {
 
@@ -580,8 +703,8 @@ MongoClient.connect(mdbURLresult, {
 
     dbresult = database.collection("results");
 
-    //app.listen(port);
-    //console.log("Magic is happening on port " + port);
+    app.listen(port);
+    console.log("Magic is happening on port " + port);
 
 });
 
@@ -611,7 +734,7 @@ app.get(BASE_API_PATH + "/results", function(request, response) {
 });
 
 // GET a single resource
-app.get(BASE_API_PATH + "/results/:city", function(request, response) {
+/*app.get(BASE_API_PATH + "/results/:city", function(request, response) {
     var city = request.params.city;
     console.log(city);
     if (!city) {
@@ -686,6 +809,129 @@ app.get(BASE_API_PATH + "/results/:city", function(request, response) {
             }
         });
     }
+});
+*/
+
+//Load Initial Data
+/*
+app.get(BASE_API_PATH + "/results/loadInitialData",function(request, response) {
+    
+    dbresult.find({}).toArray(function(err,results){
+        
+         if (err) {
+        console.error('WARNING: Error while getting initial data from DB');
+        return 0;
+    }
+    
+      if (results.length === 0) {
+        console.log('INFO: Empty DB, loading initial data');
+
+       var city = [{
+                            "city" : "seville",
+                            "foul" : "3",
+                            "goal_total" : "100",
+                            "loose" : "1",
+                            "victory" : "1",
+                            "year" : "2010",
+                            "name" : "betis"
+                            
+                        },{
+                            "city" : "madrid",
+                            "foul" : "5",
+                            "goal_total" : "150",
+                            "loose" : "3",
+                            "victory" : "34",
+                            "year" : "2015",
+                            "name" : "madrid"
+                        },{
+                            "city" : "barcelona",
+                            "foul" : "6",
+                            "goal_total" : "200",
+                            "loose" : "3",
+                            "victory" : "2",
+                            "year" : "2016",
+                            "name" : "barcelona"
+                        }];
+        dbresult.insert(city);
+        response.sendStatus(201) //created
+    } else {
+        console.log('INFO: DB has ' + results.length + ' results ');
+    }
+});
+});
+// GET a collection de paises en un mismo año 
+
+app.get(BASE_API_PATH + "/results/:foul", function (request, response) {
+    var foul = request.params.foul;
+    var city = request.params.foul;
+    if(isNaN(request.params.foul.charAt(0))){
+            if (!city) {
+        console.log("WARNING: New GET request to /results/:city without name, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /city/" + city);
+        dbresult.find({city:city}).toArray(function (err, results) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (results.length > 0) { 
+                    var result = results; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(result, 2, null));
+                    response.send(result);
+                } else {
+                    console.log("WARNING: There are not any result with city " + city);
+                    response.sendStatus(404); // not found
+                }
+        });
+}
+    }else{
+    if (!foul) {
+        console.log("WARNING: New GET request to /results/:foul without foul, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /results/" + foul);
+        dbresult.find({foul:foul}).toArray(function (err, results) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (results.length > 0) { 
+                    var result = results; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(result, 2, null));
+                    response.send(result);
+                } else {
+                    console.log("WARNING: There are not any result with foul " + foul);
+                    response.sendStatus(404); // not found
+                
+                }
+        });
+}
+}});
+
+//GET a recurso concreto con 2 parametros
+
+app.get(BASE_API_PATH + "/results/:city/:foul", function (request, response) {
+    var city = request.params.city;
+    var foul = request.params.foul;
+    if (!city || !foul) {
+        console.log("WARNING: New GET request to /results/:city without city or without foul, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /results/" + city + "/" + foul);
+        dbresult.find({city:city, $and:[{foul:foul}]}).toArray(function (err, results) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (results.length > 0) { 
+                    var result = results[0]; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(result, 2, null));
+                    response.send(result);
+                } else {
+                    console.log("WARNING: There are not any city with city " + city +  "and foul " + foul);
+                    response.sendStatus(404); // not found
+                
+                }
+        });
+}
 });
 
 
@@ -833,9 +1079,4 @@ app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
     }
 });
 
-
-
-
-
-
-
+*/
