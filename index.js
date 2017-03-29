@@ -663,14 +663,21 @@ app.put(vic +"/:country",(request,response)=>{
             console.log("WARNING: PUT incorrect");
             response.sendStatus(422); // unprocessable entity
         } else {
+            
             dbC.update({country:updatedCorner.country},
+            
+           
             {
                 country:updatedCorner.country,
                 year:updatedCorner.year,
                 corner1:updatedCorner.corner1,
                 corner2:updatedCorner.corner2,
                 corner3:updatedCorner.corner3,
+                
+                
             });
+            
+            response.sendStatus(200);
         }
     }
     
