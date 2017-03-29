@@ -16,9 +16,11 @@ app.use(helmet()); //improve security
 
 app.use("/", express.static(path.join(__dirname, "public")));
 
-app.use("/api/v1/test", express.static(path.join(__dirname, "test")));
+app.get("/api/v1/test", express.static(path.join(__dirname, "test")));
 
-
+app.get("/api/v1/test", function(request, response) {
+    response.sendFile(path.join(__dirname,"test/test.html"));
+});
 console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 
@@ -289,17 +291,17 @@ app.post(BASE_API_PATH + "/goals", function(request, response) {
             response.sendStatus(422); // unprocessable entity
         }
         else {
-            dbGoal.find({}, function(err, goals) {
+            dbGoal.find({"city":newGoals.city}, function(err, contactsBeforeInsertion) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
                 }
-                else {
-                    var contactsBeforeInsertion = goals.filter((goal) => {
+               else {
+                    /*var contactsBeforeInsertion = goals.filter((goal) => {
                         return (goal.citylocaleCompare(newGoals.city, "en", {
                             'sensitivity': 'base'
                         }) === 0);
-                    });
+                    });*/
                     if (contactsBeforeInsertion.length > 0) {
                         console.log("WARNING: The goal " + JSON.stringify(newGoals, 2, null) + " already extis, sending 409...");
                         response.sendStatus(409); // conflict
