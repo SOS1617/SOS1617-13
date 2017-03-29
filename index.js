@@ -940,7 +940,7 @@ app.get(BASE_API_PATH + "/results/:city/:foul", function (request, response) {
 
 
 
-//POST over a collection
+//POST over a collectionwqrls
 app.post(BASE_API_PATH + "/results", function(request, response) {
     var newresult = request.body;
     console.log(newresult);
