@@ -16,6 +16,9 @@ app.use(helmet()); //improve security
 
 app.use("/", express.static(path.join(__dirname, "public")));
 
+app.use("/", express.static(path.join(__dirname, "test")));
+
+
 console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 
