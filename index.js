@@ -420,7 +420,7 @@ app.delete(BASE_API_PATH + "/goals/:city", function(request, response) {
                 }
                 else {
                     console.log("WARNING: There are no goals to delete");
-                    response.sendStatus(400); // not found
+                    response.sendStatus(404); // not found
                 }
             }
         });
