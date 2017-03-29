@@ -303,7 +303,7 @@ app.delete(BASE_API_PATH + "/goals/:city", function(request, response) {
 
 //...............................................API RESULTS.....Victor..............................................................;//
 
-var MongoClient = require("mongodb").MongoClient;
+var MongoClientCorner = require("mongodb").MongoClient;
 
 var url = "mongodb://test:test@ds133670.mlab.com:33670/sandbox";
 
@@ -311,7 +311,7 @@ var dbC;
 
 var vic = "/api/v1/corners";
 
-MongoClient.connect(url, {
+MongoClientCorner.connect(url, {
     native_parser: true
 }, function(err, database) {
     if (err) {
@@ -324,10 +324,16 @@ MongoClient.connect(url, {
 
 });
 
+// Base GET
+app.get("/", function(request, response) {
+    console.log("INFO: Redirecting to /corners");
+    response.redirect(301, "/corners");
+});
+
 //GET
 
 app.get(vic + "/loadInitialData", (request, response) => {
-    MongoClient.connect(url, {
+    MongoClientCorner.connect(url, {
         native_parser: true
     }, (error, database) => {
         if (error) {
@@ -555,7 +561,7 @@ app.put(vic,(request,response)=>{
 "use strict";
 /* global __dirname */
 
-/*
+
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -574,8 +580,8 @@ MongoClient.connect(mdbURLresult, {
 
     dbresult = database.collection("results");
 
-    app.listen(port);
-    console.log("Magic is happening on port " + port);
+    //app.listen(port);
+    //console.log("Magic is happening on port " + port);
 
 });
 
@@ -828,7 +834,7 @@ app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
 });
 
 
-*/
+
 
 
 
