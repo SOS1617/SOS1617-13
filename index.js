@@ -197,10 +197,10 @@ app.get(BASE_API_PATH + "/goals/loadInitialData",function(request, response) {
 });
 // GET a collection de ciudades con el mismo numero de goles del primer equipo.
 
-app.get(BASE_API_PATH + "/goals/:goals_first_team", function (request, response) {
-    var goals_first_team = request.params.goals_first_team;
-    var city = request.params.goals_first_team;
-    if(isNaN(request.params.goals_first_team.charAt(0))){
+app.get(BASE_API_PATH + "/goals/:team_a", function (request, response) {
+    var team_a = request.params.team_a;
+    var city = request.params.team_a;
+    if(isNaN(request.params.team_a.charAt(0))){
             if (!city) {
         console.log("WARNING: New GET request to /goals/:city without name, sending 400...");
         response.sendStatus(400); // bad request
@@ -221,12 +221,12 @@ app.get(BASE_API_PATH + "/goals/:goals_first_team", function (request, response)
         });
 }
     }else{
-    if (!goals_first_team) {
-        console.log("WARNING: New GET request to /goals/:goals_first_team without goals_first_team, sending 400...");
+    if (!team_a) {
+        console.log("WARNING: New GET request to /goals/:team_a without team_a, sending 400...");
         response.sendStatus(400); // bad request
     } else {
-        console.log("INFO: New GET request to /goals/" + goals_first_team);
-        dbGoal.find({goals_first_team}).toArray(function (err, goals) {
+        console.log("INFO: New GET request to /goals/" + team_a);
+        dbGoal.find({team_a}).toArray(function (err, goals) {
             if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
@@ -235,7 +235,7 @@ app.get(BASE_API_PATH + "/goals/:goals_first_team", function (request, response)
                     console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
                     response.send(goals);
                 } else {
-                    console.log("WARNING: There are not any result with goals_first_team " + goals_first_team);
+                    console.log("WARNING: There are not any result with team_a " + team_a);
                     response.sendStatus(404); // not found
                 
                 }
@@ -245,15 +245,15 @@ app.get(BASE_API_PATH + "/goals/:goals_first_team", function (request, response)
 
 //GET a recurso concreto con 2 parametros
 
-app.get(BASE_API_PATH + "/goals/:city/:goals_first_team", function (request, response) {
+app.get(BASE_API_PATH + "/goals/:city/:team_a", function (request, response) {
     var city = request.params.city;
-    var goals_first_team = request.params.goals_first_team;
-    if (!city || !goals_first_team) {
-        console.log("WARNING: New GET request to /goals/:city without city or without goals_first_team, sending 400...");
+    var team_a = request.params.team_a;
+    if (!city || !team_a) {
+        console.log("WARNING: New GET request to /goals/:city without city or without team_a, sending 400...");
         response.sendStatus(400); // bad request
     } else {
-        console.log("INFO: New GET request to /goals/" + city + "/" + goals_first_team);
-        dbGoal.find({city:city, $and:[{goals_first_team:goals_first_team}]}).toArray(function (err, goals) {
+        console.log("INFO: New GET request to /goals/" + city + "/" + team_a);
+        dbGoal.find({city:city, $and:[{team_a:team_a}]}).toArray(function (err, goals) {
             if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
@@ -262,7 +262,7 @@ app.get(BASE_API_PATH + "/goals/:city/:goals_first_team", function (request, res
                     console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
                     response.send(goals);
                 } else {
-                    console.log("WARNING: There are not any city with city " + city +  "and goals_first_team " + goals_first_team);
+                    console.log("WARNING: There are not any city with city " + city +  "and team_a " + team_a);
                     response.sendStatus(404); // not found
                 
                 }
@@ -276,7 +276,7 @@ app.post(BASE_API_PATH + "/goals", function(request, response) {
     var newGoals = request.body;
     console.log(newGoals)
     if (!newGoals) {
-        console.log("WARNING: New POST request to /goals/ without contact, sending 400...");
+        console.log("WARNING: New POST request to /goals/ without goals, sending 400...");
         response.sendStatus(400); // bad request
     }
     else {
