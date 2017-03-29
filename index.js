@@ -682,12 +682,12 @@ app.put(vic,(request,response)=>{
     response.sendStatus(405);
 });
 
-/*
+
 "-----------------------------API RESULTS------Yopis--------------------------------------------------";
 "use strict";
 /* global __dirname */
 
-/*
+
 
 var MongoClientresult = require('mongodb').MongoClient;
 
@@ -706,8 +706,8 @@ MongoClientresult.connect(mdbURLresult, {
 
     dbresult = database.collection("results");
 
-    app.listen(port);
-    console.log("Magic is happening on port " + port);
+    //app.listen(port);
+    //console.log("Magic is happening on port " + port);
 
 });
 
@@ -816,7 +816,7 @@ app.get(BASE_API_PATH + "/results", function(request, response) {
 */
 
 //Load Initial Data
-/*
+
 app.get(BASE_API_PATH + "/results/loadInitialData",function(request, response) {
     
     dbresult.find({}).toArray(function(err,results){
@@ -1081,5 +1081,3 @@ app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
         });
     }
 });
-
-*/
