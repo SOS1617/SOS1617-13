@@ -555,7 +555,7 @@ app.put(vic,(request,response)=>{
 "use strict";
 /* global __dirname */
 
-
+/*
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -828,7 +828,7 @@ app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
 });
 
 
-
+*/
 
 
 
