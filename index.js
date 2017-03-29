@@ -554,3 +554,286 @@ app.delete(vic,(request,response)=>{
 app.put(vic,(request,response)=>{
     response.sendStatus(405);
 });
+
+//"-----------------------------API RESULTS---------Yopis-----------------------------------------------";
+"use strict";
+/* global __dirname */
+
+
+
+var MongoClient = require('mongodb').MongoClient;
+
+var mdbURLresult = "mongodb://sos1617-13:sos1617-13@ds137730.mlab.com:37730/sandbox";
+
+var dbresult;
+
+MongoClient.connect(mdbURLresult, {
+    native_parser: true
+}, function(err, database) {
+
+    if (err) {
+        console.log("CAN NOT CONEECT TO DB: " + err);
+        process.exit(1);
+    }
+
+    dbresult = database.collection("results");
+
+    app.listen(port);
+    console.log("Magic is happening on port " + port);
+
+});
+
+
+
+
+// Base GET
+app.get("/", function(request, response) {
+    console.log("INFO: Redirecting to /");
+    response.redirect(301, "/results");
+});
+
+
+// GET a collection
+app.get(BASE_API_PATH + "/results", function(request, response) {
+    console.log("INFO: New GET request to /results");
+    dbresult.find({}).toArray(function(err, results) {
+        if (err) {
+            console.error('WARNING: Error getting data from DB');
+            response.sendStatus(500); // internal server error
+        }
+        else {
+            console.log("INFO: Sending results: " + JSON.stringify(results, 2, null));
+            response.send(results);
+        }
+    });
+});
+
+// GET a single resource
+app.get(BASE_API_PATH + "/results/:city", function(request, response) {
+    var city = request.params.city;
+    console.log(city);
+    if (!city) {
+        console.log("WARNING: New GET request to /results/:city without country, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New GET request to /results/" + city);
+        dbresult.find({
+            "city": city
+        }).toArray( function(err, filteredresults) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            }
+            else {
+                console.log(filteredresults);
+                if (filteredresults.length > 0) {
+                    var result = filteredresults[0]; //since we expect to have exactly ONE establishment with this country
+                    console.log("INFO: Sending result: " + JSON.stringify(result, 2, null));
+                    response.send(result);
+                }
+                else if (city === "loadInitialData") {
+                    dbresult.find({}).toArray(function(err, results) {
+                        console.log(results);
+                        if (err) {
+                            console.error('Error while getting data from DB');
+                        }
+                        if (results.length === 0) {
+                            results = [{
+                            "city" : "seville",
+                            "foul" : "3",
+                            "goal_total" : "100",
+                            "loose" : "1",
+                            "victory" : "1",
+                            "year" : "2010",
+                            "name" : "betis"
+                            
+                        },{
+                            "city" : "madrid",
+                            "foul" : "5",
+                            "goal_total" : "150",
+                            "loose" : "3",
+                            "victory" : "34",
+                            "year" : "2015",
+                            "name" : "madrid"
+                        },{
+                            "city" : "barcelona",
+                            "foul" : "6",
+                            "goal_total" : "200",
+                            "loose" : "3",
+                            "victory" : "2",
+                            "year" : "2016",
+                            "name" : "barcelona"
+                        }];
+                            console.log(results);
+                            dbresult.insert(results);
+                            response.sendStatus(201);
+                        }
+                        else {
+                            console.log("results has more size than 0");
+                            response.sendStatus(200);
+                        }
+                    });
+
+
+                }
+                else {
+                    console.log("WARNING: There are not any city with " + city);
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
+});
+
+
+
+
+//POST over a collection
+app.post(BASE_API_PATH + "/results", function(request, response) {
+    var newresult = request.body;
+    console.log(newresult);
+    if (!newresult) {
+        console.log("WARNING: New POST request to /results/ without city, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New POST request to /results with body: " + JSON.stringify(newresult, 2, null));
+        if (!newresult.city || !newresult.foul || !newresult.goal_total || !newresult.loose || !newresult.victory || !newresult.year ||!newresult.name) {
+            console.log("WARNING: The result " + JSON.stringify(newresult, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        }
+        else {
+            dbresult.find({}).toArray( function(err, results) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                }
+                else {
+                    var ResultsBeforeInsertion = results.filter((result) => {
+                        return (result.city.localeCompare(newresult.city, "en", {
+                            'sensitivity': 'base'
+                        }) === 0);
+                    });
+                    if (ResultsBeforeInsertion.length > 0) {
+                        console.log("WARNING: The result " + JSON.stringify(newresult, 2, null) + " already extis, sending 409...");
+                        response.sendStatus(409); // conflict
+                    }
+                    else {
+                        console.log("INFO: Adding result " + JSON.stringify(newresult, 2, null));
+                        dbresult.insert(newresult);
+                        response.sendStatus(201); // created
+                    }
+                }
+            });
+        }
+    }
+});
+
+
+//POST over a single resource
+app.post(BASE_API_PATH + "/results/:city", function(request, response) {
+    var city = request.params.city;
+    console.log("WARNING: New POST request to /results/" + city + ", sending 405...");
+    response.sendStatus(405); // method not allowed
+});
+
+
+//PUT over a collection
+app.put(BASE_API_PATH + "/results", function(request, response) {
+    console.log("WARNING: New PUT request to /results, sending 405...");
+    response.sendStatus(405); // method not allowed
+});
+
+
+//PUT over a single resource
+app.put(BASE_API_PATH + "/results/:city", function(request, response) {
+    var updatedresult = request.body;
+    var city = request.params.city;
+    console.log(city);
+    if (!updatedresult) {
+        console.log("WARNING: New PUT request to /results-stats/ without establishment, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New PUT request to /result/" + city + " with data " + JSON.stringify(updatedresult, 2, null));
+        if (!updatedresult.city || !updatedresult.foul || !updatedresult.goal_total || !updatedresult.loose || !updatedresult.victory || !updatedresult.year ||!updatedresult.name) {
+            console.log("WARNING: The result " + JSON.stringify(updatedresult, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        }
+        else {
+            dbresult.find({}).toArray( function(err, results) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                }
+                else {
+                    var resultsBeforeInsertion = results.filter((result) => {
+                        return (result.city.localeCompare(city, "en", {
+                            'sensitivity': 'base'
+                        }) === 0);
+                    });
+                    if (resultsBeforeInsertion.length > 0) {
+                        dbresult.update({
+                            city: city
+                        }, updatedresult);
+                        console.log("INFO: Modifying result with city " + city + " with data " + JSON.stringify(updatedresult, 2, null));
+                        response.send(updatedresult); // return the updated result
+                    }
+                    else {
+                        console.log("WARNING: There is not any result with city " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
+    }
+});
+
+
+//DELETE over a collection
+app.delete(BASE_API_PATH + "/results", function(request, response) {
+    console.log("INFO: New DELETE request to /results");
+    dbresult.remove({}, {
+        multi: true
+    }, function(err, numRemoved) {
+        if (err) {
+            console.error('WARNING: Error removing data from DB');
+            response.sendStatus(500); // internal server error
+        }
+        else {
+            response.sendStatus(204);
+        }
+    });
+});
+
+
+//DELETE over a single resource
+app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
+    var city = request.params.city;
+    if (!city) {
+        console.log("WARNING: New DELETE request to /results/:city without city, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New DELETE request to /results/" + city);
+        dbresult.remove({
+            city: city
+        }, {}, function(err, numRemoved) {
+            if (err) {
+                console.error('WARNING: Error removing data from DB');
+                response.sendStatus(500); // internal server error
+            }
+            else {
+               response.sendStatus(204);
+            }
+        });
+    }
+});
+
+
+
+
+
+
+
