@@ -98,7 +98,7 @@ app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
                     response.send(goals);
                 }
                 else if (city === "loadInitialData") {
-                    dbresult.find({}).toArray(function(err, goals) {
+                    dbGoal.find({}).toArray(function(err, goals) {
                         console.log(goals);
                         if (err) {
                             console.error('Error while getting data from DB');
