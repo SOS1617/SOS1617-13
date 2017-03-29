@@ -1,141 +1,81 @@
-﻿Jose Llopis
+﻿1.GET Colección : 
 
 
-1.GET : 
-
-
-curl -XGET -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/results'
+curl -v -XGET -H "Content-type: application/json" 'localhost:8080/api/v1/results'
 
 
 
 
-2.POST 
+2.POST a colección:
 
 
-curl -XPOST -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/results'
+curl -v -XPOST -H "Content-type: application/json" -d '{
+    "city" : "tarragona",
+    "foul" : "3",
+    "goal_total" : "100",
+    "loose" : "1",
+    "victory" : "1",
+    "year" : "2010",
+    "name" : "betis"
+    
+}' 'localhost:8080/api/v1/results'
 
 
-3.Get a colección
 
 
-curl -XGET -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/results/city'
+3.Get a rescurso:
 
 
+curl -v -XGET -H "Content-type: application/json" 'localhost:8080/api/v1/results/seville'
 
 
 4. Delete 
 
 
-curl -XDELETE -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/results/city'
+curl -XDELETE -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/results/seville'
 
 
-5. put
+5. put recurso : 
 
 
-curl -XPUT -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/results/city'
+curl -v -XPUT -H "Content-type: application/json" -d '{
+    "city" : "seville",
+    "foul" : "5",
+    "goal_total" : "100",
+    "loose" : "1",
+    "victory" : "1",
+    "year" : "2010",
+    "name" : "betis"
+    
+}' 'localhost:8080/api/v1/results/seville'
 
 
-6.post recurso
 
 
-curl -XPOST -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/results/city'
 
 
-7.put collecion
 
 
 
 
+6.post recurso : metodo no permitido
 
 
-Victor
+curl -XPOST -d '{
+    "city" : "oviedo",
+    "foul" : "3",
+    "goal_total" : "100",
+    "loose" : "1",
+    "victory" : "1",
+    "year" : "2010",
+    "name" : "betis"
+    
+}' 'localhost:8080/api/v1/results/oviedo'
 
 
-1.Get a colecion
 
 
-curl -XGET 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners'
+7.put collecion : Metodo no permitido
 
 
-2.post
-
-
-curl -XPOST 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners'
-
-
-3 delete
-
-
-curl -XDELETE 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners'
-
-
-4.put
-
-
-curl -XPUT 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners'
-
-
-5.get recurso
-
-
-curl -XGET 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners/country
-
-
-6.post
-curl -XPOST 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners/country'
-
-
-7.delete
-
-
-curl -XDELETE 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners/'
-8.put
-
-
-https://sos161713vcm-sandbox-sos161713vcm.c9users.io/corners/country
-
-
-Luciano
-
-
-1.GET : 
-
-
-curl -XGET -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals'
-
-
-
-
-2.POST 
-
-
-curl -XPOST -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals'
-
-
-3.Get a colección
-
-
-curl -XGET -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
-
-
-
-
-4. Delete 
-
-
-curl -XDELETE -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
-
-
-5. put
-
-
-curl -XPUT -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
-
-
-6.post recurso
-
-
-curl -XPOST -H "Content-type: application/json" 'https://ide.c9.io/jllopis1/sos2017jose/goals/city'
-
-
-7.put collecion
+curl -v -XPUT -H "Content-type: application/json" 'localhost:8080/api/v1/results'
