@@ -16,9 +16,11 @@ app.use(helmet()); //improve security
 
 app.use("/", express.static(path.join(__dirname, "public")));
 
-app.use("/", express.static(path.join(__dirname, "test")));
+app.get("/api/v1/test", express.static(path.join(__dirname, "test")));
 
-
+app.get("/api/v1/test", function(request, response) {
+    response.sendFile(path.join(__dirname,"test/test.html"));
+});
 console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 
@@ -289,17 +291,17 @@ app.post(BASE_API_PATH + "/goals", function(request, response) {
             response.sendStatus(422); // unprocessable entity
         }
         else {
-            dbGoal.find({}, function(err, goals) {
+            dbGoal.find({"city":newGoals.city}, function(err, contactsBeforeInsertion) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
                 }
-                else {
-                    var contactsBeforeInsertion = goals.filter((goal) => {
+               else {
+                    /*var contactsBeforeInsertion = goals.filter((goal) => {
                         return (goal.citylocaleCompare(newGoals.city, "en", {
                             'sensitivity': 'base'
                         }) === 0);
-                    });
+                    });*/
                     if (contactsBeforeInsertion.length > 0) {
                         console.log("WARNING: The goal " + JSON.stringify(newGoals, 2, null) + " already extis, sending 409...");
                         response.sendStatus(409); // conflict
@@ -337,7 +339,11 @@ app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
     if (!updatedCity) {
         console.log("WARNING: New PUT request to /goals/ without goal, sending 400...");
         response.sendStatus(400); // bad request
-    }
+    }else{
+        if(updatedCity.city===city){
+        response.sendStatus(400); // bad request
+
+        }
     else {
         console.log("INFO: New PUT request to /goals/" + city + " with data " + JSON.stringify(updatedCity, 2, null));
         if (!updatedCity.city || !updatedCity.hour || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.team_a || !updatedCity.team_b) {
@@ -370,7 +376,7 @@ app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
                 }
             });
         }
-    }
+    }}
 });
 
 
@@ -947,7 +953,7 @@ app.get(BASE_API_PATH + "/results/:city/:foul", function (request, response) {
 
 
 
-//POST over a collection
+//POST over a collectionwqrls
 app.post(BASE_API_PATH + "/results", function(request, response) {
     var newresult = request.body;
     console.log(newresult);
