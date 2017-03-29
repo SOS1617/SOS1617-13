@@ -206,7 +206,7 @@ app.get(BASE_API_PATH + "/goals/:goals_first_team", function (request, response)
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New GET request to /city/" + city);
-        dbresult.find({city:city}).toArray(function (err, goals) {
+        dbGoal.find({city:city}).toArray(function (err, goals) {
             if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
@@ -226,7 +226,7 @@ app.get(BASE_API_PATH + "/goals/:goals_first_team", function (request, response)
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New GET request to /goals/" + goals_first_team);
-        dbresult.find({goals_first_team}).toArray(function (err, goals) {
+        dbGoal.find({goals_first_team}).toArray(function (err, goals) {
             if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
