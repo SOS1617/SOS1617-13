@@ -10,19 +10,31 @@ curl -v -XGET -H "Content-type: application/json" 'https://sos161713ldvc-sandbox
 2.GET a un recurso (Devuelve dicho recurso): 
 
 
-curl -v -XGET -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goal/seville'
+curl -v -XGET -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/seville'
 
 
 3.POST a la ruta base (Crea un nuevo recurso):
 
 
-curl -v -XPOST -H 'city: cadiz' -H 'hour: 17:30' -H 'goals_first_team: 2' -H 'goals_second_team: 1' -H 'team_a: almeria' -H 'team_b: cadiz' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
-
+curl -v -XPOST -H "Content-type: application/json" -d '{
+    "city" : "tarragona",
+    "hour" : "17:30",
+    "goals_first_team" : 2,
+    "goals_second_team" : 1,
+    "team_a" : "tarragona",
+    "team_b" : "cadiz"
+    }' 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
 
 4.POST a un recurso (Nos tiene que dar un error de método no permitido):
 
-curl -v -XPOST -H 'city: seville' -H 'hour: 17:30' -H 'goals_first_team: 2' -H 'goals_second_team: 1' -H 'team_a: sevilla' -H 'team_b: betis' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/sevilla'
-
+curl -v -XPOST -H "Content-type: application/json" -d '{
+    "city" : "tarragona",
+    "hour" : "17:30",
+    "goals_first_team" : 2,
+    "goals_second_team" : 1,
+    "team_a" : "tarragona",
+    "team_b" : "cadiz"
+    }' 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/tarragona'
 
 
 5. DELETE a la ruta base (borra todos los recursos):
@@ -32,16 +44,31 @@ curl -v -XDELETE  "Content-type: application/json" 'https://sos161713ldvc-sandbo
 6. DELETE a un recurso (borra ese recurso):
 
 
-curl -v -XDELETE  "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/madrid'
+curl -v -XDELETE  "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/malaga'
 
 
 7. PUT a la ruta base (Debe dar un error de método no permitido):
 
-curl -v -XPUT -H 'city: seville' -H 'hour: 17:30' -H 'goals_first_team: 2' -H 'goals_second_team: 1' -H 'team_a: seville' -H 'team_b: betis' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
 
+curl -v -XPUT -H "Content-type: application/json" -d '{
+    "city" : "seville",
+    "hour" : "17:30",
+    "goals_first_team" : 12,
+    "goals_second_team" : 1,
+    "team_a" : "sevilla",
+    "team_b" : "betis"
+    }' 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals'
+    
 8. PUT a un recurso (Actualiza dicho recurso):
 
-curl -v -XPUT -H 'city: seville' -H 'hour: 17:30' -H 'goals_first_team: 0' -H 'goals_second_team: 0' -H 'team_a: seville' -H 'team_b: betis' -H "Content-type: application/json" 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/seville'
+curl -v -XPUT -H "Content-type: application/json" -d '{
+    "city" : "seville",
+    "hour" : "17:30",
+    "goals_first_team" : 12,
+    "goals_second_team" : 1,
+    "team_a" : "sevilla",
+    "team_b" : "betis"
+    }' 'https://sos161713ldvc-sandbox-sos161713ldvc.c9users.io/api/v1/goals/seville'
 
 
 9. Cargar datos inicio:
