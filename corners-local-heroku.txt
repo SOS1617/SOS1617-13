@@ -1,7 +1,9 @@
+====================================================================================
 GET a la ruta base (p.e. “/corners”) devuelve una lista con todos los recursos:
 ====================================================================================
 curl -v -XGET -H "Content-type: application/json" 'https://sos161713vcm-sandbox-sos161713vcm.c9users.io/api/v1/corners'
 curl -v -XGET -H 'Content-type: application/json'  'http://localhost:8080/api/v1/corners'
+curl -v -XGET -H 'Content-type: application/json'  'http://sos1617-13.herokuapp.com/api/v1/corners'
 
 =============================================================
 POST a la ruta base (p.e. “/corners”) crea un nuevo recurso
@@ -15,10 +17,22 @@ curl -v -XPOST -H "Content-type: application/json" -d '{
     
 }' 'localhost:8080/api/v1/corners'
 
+
+curl -v -XPOST -H "Content-type: application/json" -d '{
+    "country" : "Portugal",
+    "year" : "2016",
+    "corner1" : "3",
+    "corner2" : "2",
+    "corner3" : "1"
+    
+}' 'http://sos1617-13.herokuapp.com/api/v1/corners'
+
 ==============================================================
 GET a un recurso (p.e. “/corners/Spain”) devuelve ese recurso:
 ==============================================================
 curl -v -XGET -H "Content-type: application/json" 'localhost:8080/api/v1/corners/Spain'
+
+curl -v -XGET -H "Content-type: application/json" 'http://sos1617-13.herokuapp.com/api/v1/corners/Spain'
 
 ==============================================================
 DELETE a un recurso (p.e. “/corners/Spain”) borra ese recurso:
@@ -26,9 +40,11 @@ DELETE a un recurso (p.e. “/corners/Spain”) borra ese recurso:
 
 curl -v -XDELETE -H 'Content-type: application/json'  'http://localhost:8080/api/v1/corners/Spain'
 
-==============================================================
+curl -v -XDELETE -H 'Content-type: application/json'  'http://sos1617-13.herokuapp.com/api/v1/corners/Spain'
+
+==================================================================
 PUT a un recurso (p.e. “/corners/Portugal”) actualiza ese recurso:
-==============================================================
+==================================================================
 
 curl -v -XPUT -H "Content-type: application/json" -d '{
    "country" : "Portugal",
@@ -38,6 +54,15 @@ curl -v -XPUT -H "Content-type: application/json" -d '{
     "corner3" : "0"
     
 }' 'localhost:8080/api/v1/corners/Portugal'
+
+curl -v -XPUT -H "Content-type: application/json" -d '{
+   "country" : "Portugal",
+    "year" : "2000",
+    "corner1" : "4",
+    "corner2" : "10",
+    "corner3" : "0"
+    
+}' 'http://sos1617-13.herokuapp.com/api/v1/corners/Portugal'
 
 ===================================================================================
 POST a un recurso (p.e. “/corners/Spain”) debe dar un error de método no permitido:
@@ -52,6 +77,15 @@ curl -v -XPOST -H "Content-type: application/json" -d '{
     
 }' 'localhost:8080/api/v1/corners/Germany'
 
+curl -v -XPOST -H "Content-type: application/json" -d '{
+    "country" : "Portugal",
+    "year" : "2012",
+    "corner1" : "3",
+    "corner2" : "2",
+    "corner3" : "1"
+    
+}' 'http://sos1617-13.herokuapp.com/api/v1/corners/Germany'
+
 =============================================================================
 PUT a la ruta base (p.e. “/corners”) debe dar un error de método no permitido:
 =============================================================================
@@ -65,8 +99,18 @@ curl -v -XPUT -H "Content-type: application/json" -d '{
     
 }' 'localhost:8080/api/v1/corners'
 
+curl -v -XPUT -H "Content-type: application/json" -d '{
+   "country" : "Portugal",
+    "year" : "2000",
+    "corner1" : "4",
+    "corner2" : "10",
+    "corner3" : "0"
+    
+}' 'http://sos1617-13.herokuapp.com/api/v1/corners'
+
 =====================================================================
 DELETE a la ruta base (p.e. “/towns”) borra todos los recursos:
 =====================================================================
 
 curl -v -XDELETE -H 'Content-type: application/json'  'http://localhost:8080/api/v1/corners'
+curl -v -XDELETE -H 'Content-type: application/json'  'http://sos1617-13.herokuapp.com/api/v1/corners'
