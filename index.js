@@ -330,7 +330,49 @@ app.put(BASE_API_PATH + "/goals", function(request, response) {
     response.sendStatus(405);
 });
 
-
+//
+app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
+    var updatedCity = request.body;
+    var city = request.params.city;
+    console.log(city);
+    if (!updatedCity) {
+        console.log("WARNING: New PUT request to /results-stats/ without establishment, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New PUT request to /result/" + city + " with data " + JSON.stringify(updatedCity, 2, null));
+        if (!updatedCity.city || !updatedCity.hour || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.team_a || !updatedCity.team_b) {
+            console.log("WARNING: The goal " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        }
+        else {
+            dbresult.find({}).toArray( function(err, results) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                }
+                else {
+                    var resultsBeforeInsertion = results.filter((result) => {
+                        return (result.city.localeCompare(city, "en", {
+                            'sensitivity': 'base'
+                        }) === 0);
+                    });
+                    if (resultsBeforeInsertion.length > 0) {
+                        dbresult.update({
+                            city: city
+                        }, updatedCity);
+                        console.log("INFO: Modifying result with city " + city + " with data " + JSON.stringify(updatedCity, 2, null));
+                        response.send(updatedCity); // return the updated result
+                    }
+                    else {
+                        console.log("WARNING: There is not any result with city " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
+    }
+});/*
 //PUT over a single resource
 app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
     var updatedCity = request.body;
@@ -378,7 +420,7 @@ app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
         }
     }}
 });
-
+*/
 
 //DELETE over a collection goals
 app.delete(BASE_API_PATH + "/goals", function(request, response) {
