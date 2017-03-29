@@ -54,7 +54,7 @@ MongoClientGoal.connect(mdbURLGoal, {
 // Base GET
 app.get("/", function(request, response) {
     console.log("INFO: Redirecting to /goals");
-    response.redirect(301, BASE_API_PATH + "/goals");
+    response.redirect(301, "/goals");
 });
 
 // GET a collection
@@ -85,20 +85,20 @@ app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
         console.log("INFO: New GET request to /goals/" + city);
         dbGoal.find({
             "city": city
-        }, function(err, filteredContacts) {
+        }).toArray( function(err, filteredgoals) {
             if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
             }
             else {
-                console.log(filteredContacts);
-                if (filteredContacts.length > 0) {
-                    var goals = filteredContacts[0]; //since we expect to have exactly ONE goals with this city
+                console.log(filteredgoals);
+                if (filteredgoals.length > 0) {
+                    var goals = filteredgoals[0]; //since we expect to have exactly ONE establishment with this country
                     console.log("INFO: Sending goals: " + JSON.stringify(goals, 2, null));
                     response.send(goals);
                 }
                 else if (city === "loadInitialData") {
-                    dbGoal.find({}).toArray(function(err, goals) {
+                    dbresult.find({}).toArray(function(err, goals) {
                         console.log(goals);
                         if (err) {
                             console.error('Error while getting data from DB');
@@ -152,6 +152,7 @@ app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
 //POST over a collection goals
 app.post(BASE_API_PATH + "/goals", function(request, response) {
     var newGoals = request.body;
+    console.log(newGoals)
     if (!newGoals) {
         console.log("WARNING: New POST request to /goals/ without contact, sending 400...");
         response.sendStatus(400); // bad request
@@ -207,6 +208,7 @@ app.put(BASE_API_PATH + "/goals", function(request, response) {
 app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
     var updatedCity = request.body;
     var city = request.params.city;
+    console.log(city);
     if (!updatedCity) {
         console.log("WARNING: New PUT request to /goals/ without goal, sending 400...");
         response.sendStatus(400); // bad request
@@ -218,7 +220,7 @@ app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
             response.sendStatus(422); // unprocessable entity
         }
         else {
-            dbGoal.find({}, function(err, goals) {
+            dbGoal.find({}).toArray( function(err, goals) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
@@ -257,16 +259,10 @@ app.delete(BASE_API_PATH + "/goals", function(request, response) {
             console.error('WARNING: Error removing data from DB');
             response.sendStatus(500); // internal server error
         }
-        else {
-            if (numRemoved > 0) {
-                console.log("INFO: All the goals (" + numRemoved + ") have been succesfully deleted, sending 204...");
-                response.sendStatus(204); // no content
-            }
             else {
                 console.log("WARNING: There are no goals to delete");
                 response.sendStatus(404); // not found
             }
-        }
     });
 });
 
