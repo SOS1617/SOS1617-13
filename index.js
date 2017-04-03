@@ -202,8 +202,9 @@ app.post(luc,(request,response)=>{
 app.put(luc +"/:city",(request,response)=>{
     
     var updatedGoal = request.body;
+    var city = request.params.city;
     
-    if (!updatedGoal) {
+    if (updatedGoal.city!=city) {
         console.log("WARNING: New PUT request to /goals/ without corner, sending 400...");
         response.sendStatus(400); // bad request
     } else {
