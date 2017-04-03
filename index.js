@@ -174,12 +174,12 @@ app.post(luc,(request,response)=>{
             console.log("WARNING: POST incorrect");
             response.sendStatus(422); // unprocessable entity
         } else {
-            dbGoal.find({}).toArray(function (error, team_a) {
+            dbGoal.find({}).toArray(function (error, goals) {
                 if (error) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
                 } else {
-                    var goalsBeforeInsertion = team_a.filter((i) => {
+                    var goalsBeforeInsertion = goals.filter((i) => {
                         return (i.city.localeCompare(city, "en", {'sensitivity': 'base'}) === 0);
                     });
                     if (goalsBeforeInsertion.length > 0) {
