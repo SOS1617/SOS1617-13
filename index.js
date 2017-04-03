@@ -611,34 +611,45 @@ app.post(vic,(request,response)=>{
 app.put(vic +"/:country",(request,response)=>{
     
     var updatedCorner = request.body;
-    
+    var country = request.params.country;
+    console.log(country);
     if (!updatedCorner) {
-        console.log("WARNING: New PUT request to /corners/ without corner, sending 400...");
+        console.log("WARNING: New PUT request to /corners/ without establishment, sending 400...");
         response.sendStatus(400); // bad request
-    } else {
-        console.log("INFO: New PUT");
-         if (!updatedCorner.country || !updatedCorner.year || !updatedCorner.corner1 || !updatedCorner.corner2 || !updatedCorner.corner3) {
-            console.log("WARNING: PUT incorrect");
+    }
+    else {
+        console.log("INFO: New PUT request to /corners/" + country + " with data " + JSON.stringify(updatedCorner, 2, null));
+        if (!updatedCorner.country || !updatedCorner.year || !updatedCorner.corners1 || !updatedCorner.corners2 || !updatedCorner.corners3) {
+            console.log("WARNING: The result " + JSON.stringify(updatedCorner, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
-        } else {
-            
-            dbC.update({country:updatedCorner.country},
-            
-           
-            {
-                country:updatedCorner.country,
-                year:updatedCorner.year,
-                corner1:updatedCorner.corner1,
-                corner2:updatedCorner.corner2,
-                corner3:updatedCorner.corner3,
-                
-                
+        }
+        else {
+            dbresult.find({}).toArray( function(err, results) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                }
+                else {
+                    var resultsBeforeInsertion = results.filter((corner) => {
+                        return (corner.country.localeCompare(country, "en", {
+                            'sensitivity': 'base'
+                        }) === 0);
+                    });
+                    if (resultsBeforeInsertion.length > 0) {
+                        dbresult.update({
+                            country: country
+                        }, updatedCorner);
+                        console.log("INFO: Modifying corner with country " + country + " with data " + JSON.stringify(updatedCorner, 2, null));
+                        response.send(updatedCorner); // return the updated result
+                    }
+                    else {
+                        console.log("WARNING: There is not any result with country " + country);
+                        response.sendStatus(404); // not found
+                    }
+                }
             });
-            
-            response.sendStatus(200);
         }
     }
-    
 });
 
 //DELETE a un recurso
