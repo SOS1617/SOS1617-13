@@ -480,7 +480,7 @@ app.put(vic +"/:country",(request,response)=>{
             response.sendStatus(422); // unprocessable entity
         }
         else {
-            dbresult.find({}).toArray( function(err, results) {
+            dbC.find({}).toArray( function(err, results) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
@@ -492,7 +492,7 @@ app.put(vic +"/:country",(request,response)=>{
                         }) === 0);
                     });
                     if (resultsBeforeInsertion.length > 0) {
-                        dbresult.update({
+                        dbC.update({
                             country: country
                         }, updatedCorner);
                         console.log("INFO: Modifying corner with country " + country + " with data " + JSON.stringify(updatedCorner, 2, null));
