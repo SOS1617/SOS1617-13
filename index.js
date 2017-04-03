@@ -23,22 +23,17 @@ app.get("/api/v1/test", function(request, response) {
 });
 console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
-
-
-
 //...............................................API GOALS.....Luciano..............................................................;//
 
-"use strict";
-/* global __dirname */
-
-var MongoClientGoal = require("mongodb").MongoClient;
+var MongoClientGoals = require("mongodb").MongoClient;
 
 var mdbURLGoal = "mongodb://luciano:aspire5536@ds137760.mlab.com:37760/lucianodb";
 
 var dbGoal;
 
+var luc = "/api/v1/goals";
 
-MongoClientGoal.connect(mdbURLGoal, {
+MongoClientGoals.connect(mdbURLGoal, {
     native_parser: true
 }, function(err, database) {
     if (err) {
@@ -46,15 +41,13 @@ MongoClientGoal.connect(mdbURLGoal, {
         process.exit(1);
 
     }
-    dbGoal = database.collection("goals");
-
-    app.listen(port);
-    console.log("Magic is happening on port " + port);
-
+    dbGoal= database.collection("goals");
+      app.listen(port, ()=> {
+  console.log("Magic is happening on port " + port);  
 
 });
 
-
+});
 
 // Base GET
 app.get("/", function(request, response) {
@@ -62,56 +55,26 @@ app.get("/", function(request, response) {
     response.redirect(301, "/goals");
 });
 
-// GET a collection
-app.get(BASE_API_PATH + "/goals", function(request, response) {
-    console.log("INFO : new request to /goals");
-    dbGoal.find({}).toArray(function(err, goals) {
-        if (err) {
-            console.error('WARNING: Error getting data from DB');
-            response.sendStatus(500); // internal server error
-        }
-        else {
-            console.log("INFO: Sending goals: " + JSON.stringify(goals, 2, null));
-            response.send(goals);
-        }
-    });
-});
+//GET
 
-
-// GET a single resource
-/*
-app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
-    var city = request.params.city;
-    console.log(city);
-    if (!city) {
-        console.log("WARNING: New GET request to /goals/:city without city, sending 400...");
-        response.sendStatus(400); // bad request
-    }
-    else {
-        console.log("INFO: New GET request to /goals/" + city);
-        dbGoal.find({
-            "city": city
-        }).toArray( function(err, filteredgoals) {
-            if (err) {
-                console.error('WARNING: Error getting data from DB');
-                response.sendStatus(500); // internal server error
+app.get(luc + "/loadInitialData", (request, response) => {
+    MongoClientGoals.connect(mdbURLGoal, {
+        native_parser: true
+    }, (error, database) => {
+        if (error) {
+            console.log("cannot db");
+            process.exit();
+        }
+        
+        dbGoal.find({}).toArray(function(error, tema_a) {
+            if (error) {
+                console.error("Error data from db");
+                response.sendStatus(500);
             }
             else {
-                console.log(filteredgoals);
-                if (filteredgoals.length > 0) {
-                    var goals = filteredgoals[0]; //since we expect to have exactly ONE establishment with this country
-                    console.log("INFO: Sending goals: " + JSON.stringify(goals, 2, null));
-                    response.send(goals);
-                }
-                else if (city === "loadInitialData") {
-                    dbGoal.find({}).toArray(function(err, goals) {
-                        console.log(goals);
-                        if (err) {
-                            console.error('Error while getting data from DB');
-                        }
-                        if (goals.length === 0) {
-                            goals = [{
-                                "city": "madrid",
+                    dbGoal.remove({});
+                    dbGoal.insert([{
+                       "city": "madrid",
                                 "hour": "15:30",
                                 "goals_first_team": 2,
                                 "goals_second_team": 1,
@@ -132,21 +95,62 @@ app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
                                 "goals_second_team": 1,
                                 "team_a": "malaga",
                                 "team_b": "español"
+                    }])
+                    
+                    console.log("OK");
+                    response.sendStatus(201);
+                
+            }
+        });
+    });
+});
 
-                            }];
-                            console.log(goals);
-                            dbGoal.insert(goals);
-                            response.sendStatus(201);
-                        }
-                        else {
-                            console.log("Goals has more size than 0");
-                            response.sendStatus(200);
-                        }
-                    });
+//POST a un recurso
+
+app.post(luc +"/:city",(request,response)=>{
+    response.sendStatus(405);
+});
 
 
-                }
-                else {
+//GET a una coleccion
+
+app.get(luc,(request,response)=>{
+   console.log("INFO : new request to /goals");
+    dbGoal.find({}).toArray( function (err, team_a) {
+        if (err) {
+            console.error('WARNING: Error getting data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            console.log("INFO: Sending goals");
+            response.send(team_a);
+        } 
+    });
+});
+
+//GET a un recurso
+
+app.get(luc +"/:city",(request,response)=>{
+    
+    var city = request.params.city;
+      if (!city) {
+        console.log("WARNING: New GET request to /goals/:city without city, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET");
+        dbGoal.find({"city" : city}).toArray(function(error, team_a) {
+            if (error) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+                var filteredcity=team_a.filter((s)=>{
+                    return (s.city.localeCompare(city,"en",{"sensitivity":"base"})===0);
+                });
+             
+                if (filteredcity.length > 0) {
+                    var c = filteredcity[0]; //since we expect to have exactly ONE goals with this city
+                    console.log("INFO: Sending city");
+                    response.send(c);
+                } else {
                     console.log("WARNING: There are not any contact with city " + city);
                     response.sendStatus(404); // not found
                 }
@@ -154,283 +158,135 @@ app.get(BASE_API_PATH + "/goals/:city", function(request, response) {
         });
     }
 });
-*/
 
-//Load Initial Data
-app.get(BASE_API_PATH + "/goals/loadInitialData",function(request, response) {
+//POST a una coleccion
+
+app.post(luc,(request,response)=>{
     
-    dbGoal.find({}).toArray(function(err,goals){
-        
-         if (err) {
-        console.error('WARNING: Error while getting initial data from DB');
-        return 0;
-    }
-    
-      if (goals.length === 0) {
-        console.log('INFO: Empty DB, loading initial data');
-
-       goals = [{
-                                "city": "madrid",
-                                "hour": "15:30",
-                                "goals_first_team": 2,
-                                "goals_second_team": 1,
-                                "team_a": "madrid",
-                                "team_b": "barça"
-
-                            }, {
-                                "city": "seville",
-                                "hour": "17:40",
-                                "goals_first_team": 1,
-                                "goals_second_team": 0,
-                                "team_a": "sevilla",
-                                "team_b": "betis"
-                            }, {
-                                "city": "malaga",
-                                "hour": "17:40",
-                                "goals_first_team": 0,
-                                "goals_second_team": 1,
-                                "team_a": "malaga",
-                                "team_b": "español"
-
-                            }];
-        dbGoal.insert(goals);
-        response.sendStatus(201) //created
-    } else {
-        console.log('INFO: DB has ' + goals.length + ' goals ');
-    }
-});
-});
-// GET a collection de ciudades con el mismo numero de goles del primer equipo.
-
-app.get(BASE_API_PATH + "/goals/:team_a", function (request, response) {
-    var team_a = request.params.team_a;
-    var city = request.params.team_a;
-    if(isNaN(request.params.team_a.charAt(0))){
-            if (!city) {
-        console.log("WARNING: New GET request to /goals/:city without name, sending 400...");
+    var city=request.params.city;
+    var newgoals = request.body;
+    if (!newgoals) {
+        console.log("WARNING: New POST request goals");
         response.sendStatus(400); // bad request
     } else {
-        console.log("INFO: New GET request to /city/" + city);
-        dbGoal.find({city:city}).toArray(function (err, goals) {
-            if (err) {
-                console.error('WARNING: Error getting data from DB');
-                response.sendStatus(500); // internal server error
-            } else if (goals.length > 0) { 
-                    var goals = goals; //since we expect to have exactly ONE contact with this name
-                    console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
-                    response.send(goals);
-                } else {
-                    console.log("WARNING: There are not any result with city " + city);
-                    response.sendStatus(404); // not found
-                }
-        });
-}
-    }else{
-    if (!team_a) {
-        console.log("WARNING: New GET request to /goals/:team_a without team_a, sending 400...");
-        response.sendStatus(400); // bad request
-    } else {
-        console.log("INFO: New GET request to /goals/" + team_a);
-        dbGoal.find({team_a}).toArray(function (err, goals) {
-            if (err) {
-                console.error('WARNING: Error getting data from DB');
-                response.sendStatus(500); // internal server error
-            } else if (goals.length > 0) { 
-                    var goals = goals; //since we expect to have exactly ONE contact with this name
-                    console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
-                    response.send(goals);
-                } else {
-                    console.log("WARNING: There are not any result with team_a " + team_a);
-                    response.sendStatus(404); // not found
-                
-                }
-        });
-}
-}});
-
-//GET a recurso concreto con 2 parametros
-
-app.get(BASE_API_PATH + "/goals/:city/:team_a", function (request, response) {
-    var city = request.params.city;
-    var team_a = request.params.team_a;
-    if (!city || !team_a) {
-        console.log("WARNING: New GET request to /goals/:city without city or without team_a, sending 400...");
-        response.sendStatus(400); // bad request
-    } else {
-        console.log("INFO: New GET request to /goals/" + city + "/" + team_a);
-        dbGoal.find({city:city, $and:[{team_a:team_a}]}).toArray(function (err, goals) {
-            if (err) {
-                console.error('WARNING: Error getting data from DB');
-                response.sendStatus(500); // internal server error
-            } else if (goals.length > 0) { 
-                    var goals = goals[0]; //since we expect to have exactly ONE contact with this name
-                    console.log("INFO: Sending result: " + JSON.stringify(goals, 2, null));
-                    response.send(goals);
-                } else {
-                    console.log("WARNING: There are not any city with city " + city +  "and team_a " + team_a);
-                    response.sendStatus(404); // not found
-                
-                }
-        });
-}
-});
-
-
-//POST over a collection goals
-app.post(BASE_API_PATH + "/goals", function(request, response) {
-    var newGoals = request.body;
-    console.log(newGoals)
-    if (!newGoals) {
-        console.log("WARNING: New POST request to /goals/ without goals, sending 400...");
-        response.sendStatus(400); // bad request
-    }
-    else {
-        console.log("INFO: New POST request to /goals with body: " + JSON.stringify(newGoals, 2, null));
-        if (!newGoals.city || !newGoals.hour || !newGoals.goals_first_team || !newGoals.goals_second_team || !newGoals.team_a || !newGoals.team_b) {
-            console.log("WARNING: The goal " + JSON.stringify(newGoals, 2, null) + " is not well-formed, sending 422...");
+        console.log("INFO: New POST correct body");
+        if (!newgoals.city || !newgoals.hour || !newgoals.goals_first_team || !newgoals.goals_second_team || !newgoals.team_a|| !newgoals.team_b) {
+            console.log("WARNING: POST incorrect");
             response.sendStatus(422); // unprocessable entity
-        }
-        else {
-            dbGoal.find({"city":newGoals.city}, function(err, contactsBeforeInsertion) {
-                if (err) {
+        } else {
+            dbGoal.find({}).toArray(function (error, team_a) {
+                if (error) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
-                }
-               else {
-                    /*var contactsBeforeInsertion = goals.filter((goal) => {
-                        return (goal.citylocaleCompare(newGoals.city, "en", {
-                            'sensitivity': 'base'
-                        }) === 0);
-                    });*/
-                    if (contactsBeforeInsertion.length > 0) {
-                        console.log("WARNING: The goal " + JSON.stringify(newGoals, 2, null) + " already extis, sending 409...");
+                } else {
+                    var goalsBeforeInsertion = team_a.filter((i) => {
+                        return (i.city.localeCompare(city, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (goalsBeforeInsertion.length > 0) {
+                        console.log("WARNING: The goal already extis, sending 409...");
                         response.sendStatus(409); // conflict
-                    }
-                    else {
-                        console.log("INFO: Adding goal " + JSON.stringify(newGoals, 2, null));
-                        dbGoal.insert(newGoals);
+                    } else {
+                        console.log("INFO: Adding goals");
+                        dbGoal.insert(newgoals);
                         response.sendStatus(201); // created
                     }
                 }
             });
         }
     }
+    
 });
 
-//POST over a single resource goal
-app.post(BASE_API_PATH + "/goals/:city", function(request, response) {
+//PUT a un recurso
+
+app.put(luc +"/:city",(request,response)=>{
+    
+    var updatedGoal = request.body;
     var city = request.params.city;
-    console.log("WARNING: New POST request to /goals/" + city + ", sending 405...");
-    response.sendStatus(405);
-});
-
-//PUT over a collection 
-app.put(BASE_API_PATH + "/goals", function(request, response) {
-    console.log("WARNING: New PUT request to /goals, sending 405...");
-    response.sendStatus(405);
-});
-
-
-//PUT over a single resource
-app.put(BASE_API_PATH + "/goals/:city", function(request, response) {
-    var updatedCity = request.body;
-    var city = request.params.city;
-    console.log(city);
-    if (!updatedCity) {
-        console.log("WARNING: New PUT request to /goals/ without goal, sending 400...");
+    
+    if (updatedGoal.city!=city) {
+        console.log("WARNING: New PUT request to /goals/ without corner, sending 400...");
         response.sendStatus(400); // bad request
-    }else{
-        if(updatedCity.city===city){
-        response.sendStatus(400); // bad request
-
-        }
-    else {
-        console.log("INFO: New PUT request to /goals/" + city + " with data " + JSON.stringify(updatedCity, 2, null));
-        if (!updatedCity.city || !updatedCity.hour || !updatedCity.goals_first_team || !updatedCity.goals_second_team || !updatedCity.team_a || !updatedCity.team_b) {
-            console.log("WARNING: The goal " + JSON.stringify(updatedCity, 2, null) + " is not well-formed, sending 422...");
+    } else {
+        console.log("INFO: New PUT");
+         if (!updatedGoal.city || !updatedGoal.hour || !updatedGoal.goals_first_team || !updatedGoal.goals_second_team || !updatedGoal.team_a|| !updatedGoal.team_b) {
+            console.log("WARNING: PUT incorrect");
             response.sendStatus(422); // unprocessable entity
-        }
-        else {
-            dbGoal.find({}).toArray( function(err, goals) {
-                if (err) {
-                    console.error('WARNING: Error getting data from DB');
-                    response.sendStatus(500); // internal server error
-                }
-                else {
-                    var contactsBeforeInsertion = goals.filter((goal) => {
-                        return (goal.city.localeCompare(city, "en", {
-                            'sensitivity': 'base'
-                        }) === 0);
-                    });
-                    if (contactsBeforeInsertion.length > 0) {
-                        dbGoal.update({
-                            city: city
-                        }, updatedCity);
-                        console.log("INFO: Modifying goal with city " + city + " with data " + JSON.stringify(updatedCity, 2, null));
-                        response.send(updatedCity); // return the updated goal
-                    }
-                    else {
-                        console.log("WARNING: There are not any goal with city " + city);
-                        response.sendStatus(404); // not found
-                    }
-                }
+        } else {
+            
+            dbGoal.update({city:updatedGoal.city},
+            
+           
+            {
+                city:updatedGoal.city,
+                hour:updatedGoal.hour,
+                goals_first_team:updatedGoal.goals_first_team,
+                goals_second_team:updatedGoal.goals_second_team,
+                team_a:updatedGoal.team_a,
+                team_b:updatedGoal.team_b,
+                
+                
             });
+            
+            response.sendStatus(200);
         }
-    }}
-});
-
-
-//DELETE over a collection goals
-app.delete(BASE_API_PATH + "/goals", function(request, response) {
-    console.log("INFO: New DELETE request to /goals");
-    dbGoal.remove({}, {
-        multi: true
-    }, function(err, numRemoved) {
-        if (err) {
-            console.error('WARNING: Error removing data from DB');
-            response.sendStatus(500); // internal server error
-        }
-            else {
-                console.log("WARNING: There are no goals to delete");
-                response.sendStatus(404); // not found
-            }
-    });
-});
-
-
-//DELETE over a single resource
-app.delete(BASE_API_PATH + "/goals/:city", function(request, response) {
-    var city = request.params.city;
-    if (!city) {
-        console.log("WARNING: New DELETE request to /goals/:city without city, sending 400...");
-        response.sendStatus(400); // bad request
     }
-    else {
-        console.log("INFO: New DELETE request to /contacts/" + city);
-        dbGoal.remove({
-            city: city
-        }, {}, function(err, numRemoved) {
-            if (err) {
+    
+});
+
+//DELETE a un recurso
+
+app.delete(luc+"/:city",(request,response)=>{
+    var city=request.params.city;
+    
+     if (!city) {
+        console.log("WARNING: New DELETE request to sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New DELETE r");
+        dbGoal.remove({city: city}, {}, function (error, team_a) {
+            if (error) {
                 console.error('WARNING: Error removing data from DB');
                 response.sendStatus(500); // internal server error
-            }
-            else {
-                console.log("INFO: Contacts removed: " + numRemoved);
-                if (numRemoved === 1) {
-                    console.log("INFO: The contact with city " + city + " has been succesfully deleted, sending 204...");
-                    response.sendStatus(204); // no content
+            }  else {
+                    
+                    console.log("deleted");
+                    response.sendStatus(200); // not found
                 }
-                else {
-                    console.log("WARNING: There are no goals to delete");
-                    response.sendStatus(404); // not found
-                }
-            }
+            
         });
     }
 });
 
+//DELETE a una coleccion
+
+app.delete(luc,(request,response)=>{
+    
+    console.log("INFO: New DELETE");
+    dbGoal.remove({}, {multi: true}, function (error, team_a) {
+        if (error) {
+            console.error('WARNING: Error removing data from DB');
+            response.sendStatus(500); // internal server error
+        } else {
+            team_a=JSON.parse(team_a);
+            if (team_a.n > 0) {
+                console.log("INFO: All the goals have been succesfully deleted, sending 204...");
+                response.sendStatus(204); // no content
+            } else {
+                console.log("WARNING: There are no goals to delete");
+                response.sendStatus(404); // not found
+            }
+        }
+    });
+    
+});
 
 
+//PUT a una coleccion
+
+app.put(luc,(request,response)=>{
+    response.sendStatus(405);
+});
 
 //...............................................API RESULTS.....Victor..............................................................;//
 
@@ -707,7 +563,7 @@ app.put(vic,(request,response)=>{
 });
 
 
-"-----------------------------API RESULTS------Yopis--------------------------------------------------";
+//"-----------------------------API RESULTS------Yopis--------------------------------------------------";
 "use strict";
 /* global __dirname */
 
