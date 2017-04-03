@@ -161,41 +161,46 @@ app.get(luc +"/:city",(request,response)=>{
 
 //POST a una coleccion
 
-app.post(luc,(request,response)=>{
-    
-    var city=request.params.city;
+app.post(BASE_API_PATH + "/goals", function(request, response) {
     var newgoals = request.body;
+    console.log(newgoals);
     if (!newgoals) {
-        console.log("WARNING: New POST request goals");
+        console.log("WARNING: New POST request to /results/ without city, sending 400...");
         response.sendStatus(400); // bad request
-    } else {
-        console.log("INFO: New POST correct body");
-        if (!newgoals.city || !newgoals.hour || !newgoals.goals_first_team || !newgoals.goals_second_team || !newgoals.team_a|| !newgoals.team_b) {
-            console.log("WARNING: POST incorrect");
+    }
+    else {
+        console.log("INFO: New POST request to /goals with body: " + JSON.stringify(newgoals, 2, null));
+        if (!newgoals.city || !newgoals.hour || !newgoals.goals_first_team || !newgoals.goals_second_team || !newgoals.team_a || !newgoals.team_b ) {
+            console.log("WARNING: The goals " + JSON.stringify(newgoals, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
-        } else {
-            dbGoal.find({}).toArray(function (error, goals) {
-                if (error) {
+        }
+        else {
+            dbGoal.find({}).toArray( function(err, goals) {
+                if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
-                } else {
-                    var goalsBeforeInsertion = goals.filter((i) => {
-                        return (i.city.localeCompare(city, "en", {'sensitivity': 'base'}) === 0);
+                }
+                else {
+                    var ResultsBeforeInsertion = goals.filter((goals) => {
+                        return (goals.city.localeCompare(goals.city, "en", {
+                            'sensitivity': 'base'
+                        }) === 0);
                     });
-                    if (goalsBeforeInsertion.length > 0) {
-                        console.log("WARNING: The goal already extis, sending 409...");
+                    if (ResultsBeforeInsertion.length > 0) {
+                        console.log("WARNING: The result " + JSON.stringify(goals, 2, null) + " already extis, sending 409...");
                         response.sendStatus(409); // conflict
-                    } else {
-                        console.log("INFO: Adding goals");
-                        dbGoal.insert(newgoals);
+                    }
+                    else {
+                        console.log("INFO: Adding result " + JSON.stringify(goals, 2, null));
+                        dbGoal.insert(goals);
                         response.sendStatus(201); // created
                     }
                 }
             });
         }
     }
-    
 });
+
 
 //PUT a un recurso
 
