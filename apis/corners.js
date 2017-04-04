@@ -63,6 +63,7 @@ app.get(vic,(request,response)=>{
     if(!checkApiKeyFunction(request,response)) return;
   
   //busqueda
+  var corner = request.query;
   var country = request.country;
   var year = corner.year;
   var corner1 = corner.corner1;
