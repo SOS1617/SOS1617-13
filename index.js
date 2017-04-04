@@ -23,6 +23,29 @@ app.get("/api/v1/test", function(request, response) {
 });
 console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
+
+var apigoals = require("./apis/goals.js");
+
+// APIKEY
+
+var api_key = "scraping";
+
+// HELPER METHOD APIKEY
+
+var checkApiKey =function (request,response){
+    if(!request.query.apikey){
+        console.error('WARNING: No apikey');
+        response.sendStatus(401);
+        return false;
+    }  if (request.query.apikey !== api_key) {
+        console.error('WARNING: Incorrect apikey was used!');
+        response.sendStatus(403);
+        return false;
+    }
+    return true;
+};
+
+    
 //...............................................API GOALS.....Luciano..............................................................;//
 
 var MongoClientGoals = require("mongodb").MongoClient;
@@ -42,6 +65,7 @@ MongoClientGoals.connect(mdbURLGoal, {
 
     }
     dbGoal= database.collection("goals");
+    apigoals.register(app,dbGoal,luc,checkApiKey);
       app.listen(port, ()=> {
   console.log("Magic is happening on port " + port);  
 
@@ -50,6 +74,7 @@ MongoClientGoals.connect(mdbURLGoal, {
 });
 
 // Base GET
+/*
 app.get("/", function(request, response) {
     console.log("INFO: Redirecting to /goals");
     response.redirect(301, "/goals");
@@ -326,7 +351,7 @@ app.delete(luc,(request,response)=>{
 
 app.put(luc,(request,response)=>{
     response.sendStatus(405);
-});
+});*/
 
 //...............................................API RESULTS.....Victor..............................................................;//
 
