@@ -89,7 +89,7 @@ app.get(vic,(request,response)=>{
                 var filtered = corners.filter((param)=>{
                       if ((country == undefined || param.country == country) && (year == undefined || param.year == year) && 
                 (corner1 == undefined || param.corner1 == corner1) && (corner2 == undefined || param.corner2 == corner2 ) && 
-                ( year == undefined || param.year == year )&& (name == undefined || param.name == name) ) {
+                ( corner3 == undefined || param.year == corner3 ) ) {
                 return param;
                 }
                 });
