@@ -26,6 +26,8 @@ console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-    G13'S START MODULE    -XXXXXXXXX
 
 var apigoals = require("./apis/goals.js");
 
+var apiresults = require(" ./apis/results.js");
+
 // APIKEY
 
 var api_key = "scraping";
@@ -640,6 +642,8 @@ var mdbURLresult = "mongodb://sos1617-13:sos1617-13@ds137730.mlab.com:37730/sand
 
 var dbresult;
 
+var Llopisapi = "/api/v1/results";
+
 MongoClientresult.connect(mdbURLresult, {
     native_parser: true
 }, function(err, database) {
@@ -650,14 +654,19 @@ MongoClientresult.connect(mdbURLresult, {
     }
 
     dbresult = database.collection("results");
+    apiresults.register(app,dbresult,Llopisapi,checkApiKey);
+      app.listen(port, ()=> {
+  console.log("Magic is happening on port " + port);  
+
+});
+
+});
 
     //app.listen(port);
     //console.log("Magic is happening on port " + port);
 
-});
 
-
-
+/*
 
 // Base GET
 app.get("/", function(request, response) {
@@ -681,84 +690,7 @@ app.get(BASE_API_PATH + "/results", function(request, response) {
     });
 });
 
-// GET a single resource
-/*app.get(BASE_API_PATH + "/results/:city", function(request, response) {
-    var city = request.params.city;
-    console.log(city);
-    if (!city) {
-        console.log("WARNING: New GET request to /results/:city without country, sending 400...");
-        response.sendStatus(400); // bad request
-    }
-    else {
-        console.log("INFO: New GET request to /results/" + city);
-        dbresult.find({
-            "city": city
-        }).toArray( function(err, filteredresults) {
-            if (err) {
-                console.error('WARNING: Error getting data from DB');
-                response.sendStatus(500); // internal server error
-            }
-            else {
-                console.log(filteredresults);
-                if (filteredresults.length > 0) {
-                    var result = filteredresults[0]; //since we expect to have exactly ONE establishment with this country
-                    console.log("INFO: Sending result: " + JSON.stringify(result, 2, null));
-                    response.send(result);
-                }
-                else if (city === "loadInitialData") {
-                    dbresult.find({}).toArray(function(err, results) {
-                        console.log(results);
-                        if (err) {
-                            console.error('Error while getting data from DB');
-                        }
-                        if (results.length === 0) {
-                            results = [{
-                            "city" : "seville",
-                            "foul" : "3",
-                            "goal_total" : "100",
-                            "loose" : "1",
-                            "victory" : "1",
-                            "year" : "2010",
-                            "name" : "betis"
-                            
-                        },{
-                            "city" : "madrid",
-                            "foul" : "5",
-                            "goal_total" : "150",
-                            "loose" : "3",
-                            "victory" : "34",
-                            "year" : "2015",
-                            "name" : "madrid"
-                        },{
-                            "city" : "barcelona",
-                            "foul" : "6",
-                            "goal_total" : "200",
-                            "loose" : "3",
-                            "victory" : "2",
-                            "year" : "2016",
-                            "name" : "barcelona"
-                        }];
-                            console.log(results);
-                            dbresult.insert(results);
-                            response.sendStatus(201);
-                        }
-                        else {
-                            console.log("results has more size than 0");
-                            response.sendStatus(200);
-                        }
-                    });
 
-
-                }
-                else {
-                    console.log("WARNING: There are not any city with " + city);
-                    response.sendStatus(404); // not found
-                }
-            }
-        });
-    }
-});
-*/
 
 //Load Initial Data
 
@@ -1026,3 +958,5 @@ app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
         });
     }
 });
+
+*/
