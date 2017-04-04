@@ -23,7 +23,7 @@ app.get(vic + "/loadInitialData", (request, response) => {
                     dbC.remove({});
                     dbC.insert([
                         {
-                            "country": "Spain",
+                        "country": "Spain",
                         "year": "2010",
                         "corner1": "2",
                         "corne2": "1",
