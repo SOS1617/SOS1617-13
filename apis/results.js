@@ -1,10 +1,9 @@
 //...............................................API Results.....Llopis..............................................................;//
 var exports = module.exports= {};
 
-exports.register = function(app,dbresult,Llopisapi,checkApiKey){
-
-
+exports.register = function(app,dbresult,Llopisapi,checkApiKeyFunction){
 // Base GET
+
 app.get("/", function(request, response) {
     console.log("INFO: Redirecting to /results");
     response.redirect(301, "/results");
@@ -13,7 +12,7 @@ app.get("/", function(request, response) {
 //Load Initial Data
 
 app.get(Llopisapi + "/loadInitialData", (request, response) => {
-    if(!checkApiKey(request,response)) return;
+    if(!checkApiKeyFunction(request,response)) return;
         
         dbresult.find({}).toArray(function(error, results) {
             if (error) {
@@ -61,7 +60,7 @@ app.get(Llopisapi + "/loadInitialData", (request, response) => {
 //GET a una coleccion
 
 app.get(Llopisapi,(request,response)=>{
-    if(!checkApiKey(request,response)) return;
+    if(!checkApiKeyFunction(request,response)) return;
   
   //busqueda
   var result = request.query;
@@ -148,7 +147,7 @@ var insertar = function(elements,array,limit,offset){
 //POST a un recurso
 
 app.post(Llopisapi + "/:city",(request,response)=>{
-    if(!checkApiKey(request,response)) return;
+    if(!checkApiKeyFunction(request,response)) return;
 
     response.sendStatus(405);
 });
@@ -158,7 +157,7 @@ app.post(Llopisapi + "/:city",(request,response)=>{
 //GET a un recurso
 
 app.get(Llopisapi + "/:city",(request,response)=>{
-    if(!checkApiKey(request,response)) return;
+    if(!checkApiKeyFunction(request,response)) return;
   
     var city = request.params.city;
       if (!city) {
@@ -188,10 +187,46 @@ app.get(Llopisapi + "/:city",(request,response)=>{
     }
 });
 
+//GET a recurso concreto con 2 parametros
+
+app.get(Llopisapi + "/results/:city/:year", function (request, response) {
+    if(!checkApiKeyFunction(request,response)) return;
+    var city = request.params.city;
+    var year = request.params.year;
+    if (!city || !year) {
+        console.log("WARNING: New GET request to /results/:city without city or without year, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /results/" + city + "/" + year);
+        dbresult.find({city:city, $and:[{year:year}]}).toArray(function (err, results) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (results.length > 0) { 
+                    var result = results[0]; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(result, 2, null));
+                    response.send(result);
+                } else {
+                    console.log("WARNING: There are not any city with city " + city +  "and year " + year);
+                    response.sendStatus(404); // not found
+                
+                }
+        });
+}
+});
+
+
+
+
+
+
+
+
+
 //POST a una coleccion
 
 app.post(Llopisapi + "/results", function(request, response) {
-        if(!checkApiKey(request,response)) return;
+        if(!checkApiKeyFunction(request,response)) return;
 
     var newresults = request.body;
     console.log(newresults);
@@ -236,7 +271,7 @@ app.post(Llopisapi + "/results", function(request, response) {
 //PUT a un recurso
 
 app.put(Llopisapi +"/:city",(request,response)=>{
-        if(!checkApiKey(request,response)) return;
+        if(!checkApiKeyFunction(request,response)) return;
 
     
     var updatedresult = request.body;
@@ -275,7 +310,7 @@ app.put(Llopisapi +"/:city",(request,response)=>{
 //DELETE a un recurso
 
 app.delete(Llopisapi+"/:city",(request,response)=>{
-        if(!checkApiKey(request,response)) return;
+        if(!checkApiKeyFunction(request,response)) return;
 
     var city=request.params.city;
     
@@ -301,7 +336,7 @@ app.delete(Llopisapi+"/:city",(request,response)=>{
 //DELETE a una coleccion
 
 app.delete(Llopisapi,(request,response)=>{
-        if(!checkApiKey(request,response)) return;
+        if(!checkApiKeyFunction(request,response)) return;
 
     
     console.log("INFO: New DELETE");
