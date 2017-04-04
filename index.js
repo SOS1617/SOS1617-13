@@ -116,13 +116,48 @@ app.post(luc +"/:city",(request,response)=>{
 
 app.get(luc,(request,response)=>{
    console.log("INFO : new request to /goals");
-    dbGoal.find({}).toArray( function (err, team_a) {
+   var from = request.query.from;
+	var to = request.query.to;
+	var all = request.query.all;
+	var search = request.query.search;
+	var apikey = request.query.apikey;
+	var i = [];
+	var result = [];
+
+	
+    dbGoal.find({}).toArray( function (err, goals) {
+        
+        goals.forEach(function(value,key){
+            if(search == ""|| all == 1){
+				i.push(value);
+			}else{
+				if(search == value.city || search == value.hour){
+					i.push(value);	
+				}
+			}
+		});
+		if(all != 1){
+			i.forEach(function(value,key){
+				if(key+1 >= from && key+1 <= to){
+					result.push(value);	
+				}
+			});
+		}else{
+			result = i;
+		}
+		
+		var final = { 
+			result: result, 
+			total: i.length
+		}
+
+        
         if (err) {
             console.error('WARNING: Error getting data from DB');
             response.sendStatus(500); // internal server error
         } else {
             console.log("INFO: Sending goals");
-            response.send(team_a);
+            response.send(final);
         } 
     });
 });
