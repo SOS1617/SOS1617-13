@@ -381,6 +381,7 @@ app.put(BASE_API_PATH +"/:city",(request,response)=>{
 
 //DELETE a un recurso
 
+//DELETE over a single resource
 app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
     if(!checkApiKeyFunction(request,response)) return;
     var city = request.params.city;
@@ -397,22 +398,12 @@ app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
                 console.error('WARNING: Error removing data from DB');
                 response.sendStatus(500); // internal server error
             }
-            else{
-            if (numRemoved.n > 0) {
-                console.log("INFO: All the uclchampions (" + numRemoved + ") have been succesfully deleted, sending 204...");
-                response.sendStatus(204);
-            }
-               //response.sendStatus(204); //204
-            
             else {
-                console.log("WARNING: There are no contacts to delete");
-                response.sendStatus(404); // not found
-            }
+               response.sendStatus(204);
             }
         });
     }
 });
-
 
 
 

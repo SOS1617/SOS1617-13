@@ -17,10 +17,12 @@ app.use(bodyParser.json()); //use default json enconding/decoding
 app.use(helmet()); //improve security
 
 
-//app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/", express.static(path.join(__dirname, "public")));
 
 
 app.get("/api/v1/test", express.static(path.join(__dirname, "test")));
+
+
 
 app.get("/api/v1/test", function(request, response) {
     response.sendFile(path.join(__dirname,"test/test.html"));
