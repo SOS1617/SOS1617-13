@@ -313,10 +313,10 @@ app.delete(BASE_API_PATH+"/corners/:country", function (request, response) {
     if (!checkApiKeyFunction(request, response)) return;
     var cityParam = request.params.country;
     if (!cityParam) {
-        console.log("WARNING: New DELETE request to /goals/:year without city, sending 400...");
+        console.log("WARNING: New DELETE request to /corners/:year without city, sending 400...");
         response.sendStatus(400); // bad request
     } else {
-        console.log("INFO: New DELETE request to /goals/" + cityParam);
+        console.log("INFO: New DELETE request to /corners/" + cityParam);
         dbC.remove({country:cityParam},{},function (err, result) {
             var numRemoved = JSON.parse(result);
             if (err) {
