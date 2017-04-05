@@ -309,7 +309,7 @@ app.put(BASE_API_PATH + "/corners/:country", function(request, response) {
 
 //DELETE a un recurso
 
-app.delete(BASE_API_PATH+"/:country", function (request, response) {
+app.delete(BASE_API_PATH+"/corners/:country", function (request, response) {
     if (!checkApiKeyFunction(request, response)) return;
     var cityParam = request.params.country;
     if (!cityParam) {
