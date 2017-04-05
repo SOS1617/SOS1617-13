@@ -109,7 +109,7 @@ app.get(luc,(request,response)=>{
                  var filtered = goals.filter((param)=>{
                       if ((city == undefined || param.city == city) && (hour == undefined || param.hour == hour) && 
                 (goals_first_team == undefined || param.goals_first_team == goals_first_team) && (goals_second_team == undefined || param.goals_second_team == goals_second_team) && 
-                (team_a == undefined || param.team_a == city)&& (team_b == undefined || param.team_b == team_b) ) {
+                (team_a == undefined || param.team_a == city) && (team_b == undefined || param.team_b == team_b) ) {
                 return param;
                 }
                 });
@@ -293,19 +293,19 @@ app.delete(luc+"/:city",(request,response)=>{
 });
 
 //DELETE a una coleccion
-
+/*
 app.delete(luc,(request,response)=>{
         if(!checkApiKey(request,response)) return;
 
     
     console.log("INFO: New DELETE");
-    dbGoal.remove({}, {multi: true}, function (error, goals) {
+    dbGoal.remove({}, {multi: true}, function (error, numRemoved) {
         if (error) {
             console.error('WARNING: Error removing data from DB');
             response.sendStatus(500); // internal server error
         } else {
-            goals=JSON.parse(goals);
-            if (goals > 0) {
+            numRemoved=JSON.parse(numRemoved);
+            if (numRemoved > 0) {
                 console.log("INFO: All the goals have been succesfully deleted, sending 204...");
                 response.sendStatus(204); // no content
             } else {
@@ -315,6 +315,22 @@ app.delete(luc,(request,response)=>{
         }
     });
 
+});
+*/
+app.delete(luc, function(request, response) {
+     if(!checkApiKey(request,response)) return;
+    console.log("INFO: New DELETE request to /results");
+    dbGoal.remove({}, {
+        multi: true
+    }, function(err, numRemoved) {
+        if (err) {
+            console.error('WARNING: Error removing data from DB');
+            response.sendStatus(500); // internal server error
+        }
+        else {
+            response.sendStatus(204);
+        }
+    });
 });
 
 
