@@ -1,7 +1,7 @@
 //...............................................API Results.....Llopis..............................................................;//
 var exports = module.exports= {};
 
-exports.register = function(app,dbresult,Llopisapi,checkApiKeyFunction){
+exports.register = function(app,dbresult,BASE_API_PATH,checkApiKeyFunction){
 // Base GET
 
 app.get("/", function(request, response) {
@@ -11,7 +11,7 @@ app.get("/", function(request, response) {
 
 //Load Initial Data
 
-app.get(Llopisapi + "/loadInitialData", (request, response) => {
+app.get(BASE_API_PATH + "/loadInitialData", (request, response) => {
     if(!checkApiKeyFunction(request,response)) return;
         
         dbresult.find({}).toArray(function(error, results) {
@@ -59,7 +59,7 @@ app.get(Llopisapi + "/loadInitialData", (request, response) => {
 
 //GET a una coleccion
 
-app.get(Llopisapi,(request,response)=>{
+app.get(BASE_API_PATH + "/results",(request,response)=>{
     if(!checkApiKeyFunction(request,response)) return;
   
   //busqueda
@@ -89,7 +89,7 @@ app.get(Llopisapi,(request,response)=>{
                 
                 var filtered = results.filter((param)=>{
                       if ((city == undefined || param.city == city) && (foul == undefined || param.foul == foul) && 
-                (goal_total == undefined || param.goal_total == goal_total) && (victory == undefined || param.victory == victory ) && 
+                (goal_total == undefined || param.goal_total == goal_total) &&(loose == undefined || param.loose == loose ) && (victory == undefined || param.victory == victory ) && 
                 ( year == undefined || param.year == year )&& (name == undefined || param.name == name) ) {
                 return param;
                 }
@@ -113,7 +113,7 @@ app.get(Llopisapi,(request,response)=>{
             } else {
                  var filtered = results.filter((param)=>{
                       if ((city == undefined || param.city == city) && (foul == undefined || param.foul == foul) && 
-                (goal_total == undefined || param.goal_total == goal_total) && (victory == undefined || param.victory == victory ) && 
+                (goal_total == undefined || param.goal_total == goal_total) && (loose == undefined || param.loose == loose ) && (victory == undefined || param.victory == victory ) && 
                 ( year == undefined || param.year == year )&& (name == undefined || param.name == name) ) {
                 return param;
                 }
@@ -144,19 +144,10 @@ var insertar = function(elements,array,limit,offset){
     }
     return elements;
 };
-//POST a un recurso
-
-app.post(Llopisapi + "/:city",(request,response)=>{
-    if(!checkApiKeyFunction(request,response)) return;
-
-    response.sendStatus(405);
-});
-
-
 
 //GET a un recurso
 
-app.get(Llopisapi + "/:city",(request,response)=>{
+app.get(BASE_API_PATH + "/:city",(request,response)=>{
     if(!checkApiKeyFunction(request,response)) return;
   
     var city = request.params.city;
@@ -189,7 +180,7 @@ app.get(Llopisapi + "/:city",(request,response)=>{
 
 //GET a recurso concreto con 2 parametros
 
-app.get(Llopisapi + "/results/:city/:year", function (request, response) {
+app.get(BASE_API_PATH + "/results/:city/:year", function (request, response) {
     if(!checkApiKeyFunction(request,response)) return;
     var city = request.params.city;
     var year = request.params.year;
@@ -215,29 +206,33 @@ app.get(Llopisapi + "/results/:city/:year", function (request, response) {
 }
 });
 
+//POST a un recurso
 
-
-
-
-
+app.post(BASE_API_PATH + "results/:city",(request,response)=>{
+    if(!checkApiKeyFunction(request,response)) return;
+    var city = request.params.city;
+    console.log("WARNING: New POST request to /results/" + city + ", sending 405...");
+    response.sendStatus(405); // method not allowed
+});
 
 
 
 //POST a una coleccion
 
-app.post(Llopisapi + "/results", function(request, response) {
-        if(!checkApiKeyFunction(request,response)) return;
-
-    var newresults = request.body;
-    console.log(newresults);
-    if (!newresults) {
+//POST over a collection
+app.post(BASE_API_PATH + "/results", function(request, response) {
+    
+     if(!checkApiKeyFunction(request,response)) return;
+    var newresult = request.body;
+    console.log(newresult);
+    if (!newresult) {
         console.log("WARNING: New POST request to /results/ without city, sending 400...");
         response.sendStatus(400); // bad request
     }
     else {
-        console.log("INFO: New POST request to /results with body: " + JSON.stringify(newresults, 2, null));
-        if (!newresults.city || !newresults.foul || !newresults.loose || !newresults.victory || !newresults.year || !newresults.name ) {
-            console.log("WARNING: The results " + JSON.stringify(newresults, 2, null) + " is not well-formed, sending 422...");
+        console.log("INFO: New POST request to /results with body: " + JSON.stringify(newresult, 2, null));
+        if (!newresult.city || !newresult.foul || !newresult.goal_total || !newresult.loose || !newresult.victory || !newresult.year ||!newresult.name) {
+            console.log("WARNING: The result " + JSON.stringify(newresult, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         }
         else {
@@ -247,18 +242,18 @@ app.post(Llopisapi + "/results", function(request, response) {
                     response.sendStatus(500); // internal server error
                 }
                 else {
-                    var ResultsBeforeInsertion = results.filter((results) => {
-                        return (results.city.localeCompare(results.city, "en", {
+                    var ResultsBeforeInsertion = results.filter((result) => {
+                        return (result.city.localeCompare(newresult.city, "en", {
                             'sensitivity': 'base'
                         }) === 0);
                     });
                     if (ResultsBeforeInsertion.length > 0) {
-                        console.log("WARNING: The result " + JSON.stringify(results, 2, null) + " already extis, sending 409...");
+                        console.log("WARNING: The result " + JSON.stringify(newresult, 2, null) + " already extis, sending 409...");
                         response.sendStatus(409); // conflict
                     }
                     else {
-                        console.log("INFO: Adding result " + JSON.stringify(results, 2, null));
-                        dbresult.insert(results);
+                        console.log("INFO: Adding result " + JSON.stringify(newresult, 2, null));
+                        dbresult.insert(newresult);
                         response.sendStatus(201); // created
                     }
                 }
@@ -268,21 +263,22 @@ app.post(Llopisapi + "/results", function(request, response) {
 });
 
 
+
+
+
 //PUT a un recurso
 
-app.put(Llopisapi +"/:city",(request,response)=>{
-        if(!checkApiKeyFunction(request,response)) return;
-
-    
-    var updatedresult = request.body;
+app.put(BASE_API_PATH +"/:city",(request,response)=>{
+ if(!checkApiKeyFunction(request,response)) return;
+ var updatedresult = request.body;
     var city = request.params.city;
     
     if (updatedresult.city!=city) {
-        console.log("WARNING: New PUT request to /results/ without corner, sending 400...");
+        console.log("WARNING: New PUT request to /results/ without city, sending 400...");
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New PUT");
-         if (!updatedresult.city || !updatedresult.foul || !updatedresult.loose || !updatedresult.victory || !updatedresult.year|| !updatedresult.name) {
+         if (!updatedresult.city || !updatedresult.foul || !updatedresult.goal_total|| !updatedresult.loose || !updatedresult.victory || !updatedresult.year|| !updatedresult.name) {
             console.log("WARNING: PUT incorrect");
             response.sendStatus(422); // unprocessable entity
         } else {
@@ -293,6 +289,7 @@ app.put(Llopisapi +"/:city",(request,response)=>{
             {
                 city:updatedresult.city,
                 foul:updatedresult.foul,
+                goal_total:updatedresult.goal_total,
                 victory:updatedresult.victory,
                 loose:updatedresult.loose,
                 year:updatedresult.year,
@@ -309,7 +306,7 @@ app.put(Llopisapi +"/:city",(request,response)=>{
 
 //DELETE a un recurso
 
-app.delete(Llopisapi+"/:city",(request,response)=>{
+/*app.delete(BASE_API_PATH+"/:city",(request,response)=>{
         if(!checkApiKeyFunction(request,response)) return;
 
     var city=request.params.city;
@@ -331,11 +328,42 @@ app.delete(Llopisapi+"/:city",(request,response)=>{
             
         });
     }
+});*/
+app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
+    if(!checkApiKeyFunction(request,response)) return;
+    var city = request.params.city;
+    if (!city) {
+        console.log("WARNING: New DELETE request to /results/:city without city, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New DELETE request to /results/" + city);
+        dbresult.remove({
+            city: city
+        }, {}, function(err, numRemoved) {
+            if (err) {
+                console.error('WARNING: Error removing data from DB');
+                response.sendStatus(500); // internal server error
+            }
+            else {
+               response.sendStatus(204);
+            }
+        });
+    }
 });
 
-//DELETE a una coleccion
 
-app.delete(Llopisapi,(request,response)=>{
+
+
+
+
+
+
+
+
+//DELETE a una coleccion
+/*
+app.delete(BASE_API_PATH,(request,response)=>{
         if(!checkApiKeyFunction(request,response)) return;
 
     
@@ -345,8 +373,8 @@ app.delete(Llopisapi,(request,response)=>{
             console.error('WARNING: Error removing data from DB');
             response.sendStatus(500); // internal server error
         } else {
-            results=JSON.parse(results);
-            if (results.n > 0) {
+            var numremoved=JSON.parse(results);
+            if (numremoved.na > 0) {
                 console.log("INFO: All the results have been succesfully deleted, sending 204...");
                 response.sendStatus(204); // no content
             } else {
@@ -358,10 +386,30 @@ app.delete(Llopisapi,(request,response)=>{
 
 });
 
+*/
+
+//DELETE over a collection
+
+app.delete(BASE_API_PATH + "/results", function(request, response) {
+     if(!checkApiKeyFunction(request,response)) return;
+    console.log("INFO: New DELETE request to /results");
+    dbresult.remove({}, {
+        multi: true
+    }, function(err, numRemoved) {
+        if (err) {
+            console.error('WARNING: Error removing data from DB');
+            response.sendStatus(500); // internal server error
+        }
+        else {
+            response.sendStatus(204);
+        }
+    });
+});
+
 
 //PUT a una coleccion
 
-app.put(Llopisapi,(request,response)=>{
+app.put(BASE_API_PATH,(request,response)=>{
     response.sendStatus(405);
 });
 

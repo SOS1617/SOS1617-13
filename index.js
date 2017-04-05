@@ -385,7 +385,7 @@ MongoClientresult.connect(mdbURLresult, {
     } 
     
     dbresult = database.collection("results");
-    apiresults.register(app,dbresult,Llopisapi,checkApiKeyFunction);
+    apiresults.register(app,dbresult,BASE_API_PATH,checkApiKeyFunction);
 
 
 });
