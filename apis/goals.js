@@ -85,7 +85,7 @@ app.get(luc,(request,response)=>{
                 var filtered = goals.filter((param)=>{
                       if ((city == undefined || param.city == city) && (hour == undefined || param.hour == hour) && 
                 (goals_first_team == undefined || param.goals_first_team == goals_first_team) && (goals_second_team == undefined || param.goals_second_team == goals_second_team) && 
-                (team_a == undefined || param.team_a == city)&& (team_b == undefined || param.team_b == team_b) ) {
+                (team_a == undefined || param.team_a == team_a)&& (team_b == undefined || param.team_b == team_b) ) {
                 return param;
                 }
                 });
@@ -109,7 +109,7 @@ app.get(luc,(request,response)=>{
                  var filtered = goals.filter((param)=>{
                       if ((city == undefined || param.city == city) && (hour == undefined || param.hour == hour) && 
                 (goals_first_team == undefined || param.goals_first_team == goals_first_team) && (goals_second_team == undefined || param.goals_second_team == goals_second_team) && 
-                (team_a == undefined || param.team_a == city) && (team_b == undefined || param.team_b == team_b) ) {
+                (team_a == undefined || param.team_a == team_a) && (team_b == undefined || param.team_b == team_b) ) {
                 return param;
                 }
                 });
