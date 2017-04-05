@@ -269,41 +269,37 @@ app.put(luc +"/:city",(request,response)=>{
     
 });
 */
-app.put(luc +"/:city",(request,response)=>{
-        if(!checkApiKey(request,response)) return;
-
-    
-    var updatedGoal = request.body;
-    var city = request.params.city;
-    
-    if (!updatedGoal) {
-        console.log("WARNING: New PUT request to /goals/ without corner, sending 400...");
+app.put(luc +"/:city", function (request, response) {
+    if (!checkApiKey(request, response)) return;
+    var updatedUclchampion = request.body;
+    var year = request.params.city;
+    if (!updatedUclchampion) {
+        console.log("WARNING: New PUT request to /uclchampions/ without uclchampion, sending 400...");
         response.sendStatus(400); // bad request
     } else {
-            console.log("INFO: New PUT request to /goals/" + city + " with data " + JSON.stringify(updatedGoal, 2, null));
-        if(updatedGoal.city!=city){
-            console.log("WARNING: New PUT request to /goals/ with diferent city, sending 400...");
+        console.log("INFO: New PUT request to /uclchampions/" + year + " with data " + JSON.stringify(updatedUclchampion, 2, null));
+        if(updatedUclchampion.year!=year){
+            console.log("WARNING: New PUT request to /uclchampions/ with diferent year, sending 400...");
             response.sendStatus(400); // bad request
         }
-         if (!updatedGoal.city || !updatedGoal.hour || !updatedGoal.goals_first_team || !updatedGoal.goals_second_team || !updatedGoal.team_a|| !updatedGoal.team_b) {
-            console.log("WARNING: PUT incorrect");
+        if (!updatedUclchampion.city || !updatedUclchampion.hour || !updatedUclchampion.goals_first_team || !updatedUclchampion.goals_second_team || !updatedUclchampion.team_a || !updatedUclchampion.team_b) {
+            console.log("WARNING: The uclchampion " + JSON.stringify(updatedUclchampion, 2, null) + " is not well-formed, sending 422...");
             response.sendStatus(422); // unprocessable entity
         } else {
-            
-             dbGoal.find({}).toArray(function (err, goals) {
+            dbGoal.find({}).toArray(function (err, uclchampions) {
                 if (err) {
                     console.error('WARNING: Error getting data from DB');
                     response.sendStatus(500); // internal server error
                 } else {
-                    var uclchampionsBeforeInsertion = goals.filter((uclchampion) => {
-                        return (goals.city.localeCompare(updatedGoal.city, "en", {'sensitivity': 'base'}) === 0);
+                    var uclchampionsBeforeInsertion = uclchampions.filter((uclchampion) => {
+                        return (uclchampion.year.localeCompare(updatedUclchampion.year, "en", {'sensitivity': 'base'}) === 0);
                     });
                     if (uclchampionsBeforeInsertion.length > 0) {
-                        dbGoal.update({city: city}, updatedGoal);
-                        console.log("INFO: Modifying uclchampion with year " + city + " with data " + JSON.stringify(updatedGoal, 2, null));
-                        response.send(updatedGoal); // return the updated uclchampion
+                        dbGoal.update({year: year}, updatedUclchampion);
+                        console.log("INFO: Modifying uclchampion with year " + year + " with data " + JSON.stringify(updatedUclchampion, 2, null));
+                        response.send(updatedUclchampion); // return the updated uclchampion
                     } else {
-                        console.log("WARNING: There are not any uclchampion with year " + city);
+                        console.log("WARNING: There are not any uclchampion with year " + year);
                         response.sendStatus(404); // not found
                     }
                 }
