@@ -56,7 +56,157 @@ app.get(luc + "/loadInitialData", (request, response) => {
 
 //Get conjunto datos
 
-module.exports.getObtainStats = (req, res) => {
+//Get conjunto datos
+
+app.get(luc,(request,response)=>{
+    
+
+    var key = req.query.apikey;
+    var aux = [];
+
+     if(!checkApiKey(request,response)){
+         return;
+     }
+    
+    else {
+
+
+        console.log("INFO: New GET request to /hiv-stats");
+        if (!dbGoal || dbGoal.length === 0) {
+            console.log("No hay nada en la base de datos");
+            res.sendStatus(404);
+        }
+
+        else {
+            var limit = parseInt(request.query.limit);
+            var offset = parseInt(request.query.offset);
+            var from = request.query.from;
+            var to = request.query.to;
+
+
+            if (limit && offset) {
+
+                dbGoal.find({}).skip(offset).limit(limit).toArray(function(err, data) {
+                    if (err) {
+                        console.error('ERROR from database');
+                        res.sendStatus(500); // internal server error
+                    }
+                    else {
+                        if (data.length === 0) {
+                            res.sendStatus(404);
+                        }
+                        console.log("INFO: Sending contacts: " + JSON.stringify(data, 2, null));
+                        if (from && to) {
+
+                          //  aux = buscameDatos(data, aux, from, to);
+                            if (aux.length > 0) {
+                                res.send(0);
+                            }
+                            else {
+                                res.sendStatus(404); //Está el from y el to pero está mal hecho
+                            }
+                        }
+                        else {
+                            res.send(data);
+                        }
+                    }
+                });
+            }
+            else if (limit) {
+
+                dbGoal.find({}).limit(limit).toArray(function(err, data) {
+                    if (err) {
+                        console.error('ERROR from database');
+                        res.sendStatus(500); // internal server error
+                    }
+                    else {
+                        if (data.length === 0) {
+                            res.sendStatus(404);
+                        }
+                        console.log("INFO: Sending contacts: " + JSON.stringify(data, 2, null));
+                        if (from && to) {
+
+                           // aux = buscameDatos(data, aux, from, to);
+                            if (aux.length > 0) {
+                                res.send(0);
+                            }
+                            else {
+                                res.sendStatus(404); //Está el from y el to pero está mal hecho
+                            }
+                        }
+                        else {
+                            res.send(0);
+                        }
+                    }
+                });
+            }
+            else if (offset) {
+
+                db.find({}).skip(offset).toArray(function(err, data) {
+                    if (err) {
+                        console.error('ERROR from database');
+                        res.sendStatus(500); // internal server error
+                    }
+                    else {
+                        if (data.length === 0) {
+                            res.sendStatus(404);
+                        }
+                        console.log("INFO: Sending contacts: " + JSON.stringify(data, 2, null));
+                        if (from && to) {
+
+                            //aux = buscameDatos(data, aux, from, to);
+                            if (aux.length > 0) {
+                                res.send(0);
+                            }
+                            else {
+                                res.sendStatus(404); //Está el from y el to pero está mal hecho
+                            }
+                        }
+                        else {
+                            res.send(data);
+                        }
+                    }
+                });
+            }
+            else {
+
+                dbGoal.find({}).toArray(function(err, data) {
+                    if (err) {
+                        console.error('ERROR from database');
+                        res.sendStatus(500); // internal server error
+                    }
+                    else {
+                        if (data.length === 0) {
+                            res.sendStatus(404);
+                        }
+                        console.log("INFO: Sending contacts: " + JSON.stringify(data, 2, null));
+                        if (from && to) {
+
+                           // aux = buscameDatos(data, aux, from, to);
+                            if (aux.length > 0) {
+                                res.send(0);
+                            }
+                            else {
+                                res.sendStatus(404); //Está el from y el to pero está mal hecho
+                            }
+                        }
+                        else {
+                            res.send(data);
+                        }
+                    }
+                });
+            }
+        }
+    }
+};
+
+
+
+
+
+
+/*
+app.get(luc, (request, response) => {
 
         if(!checkApiKey(request,response)) return;
 
@@ -188,8 +338,8 @@ module.exports.getObtainStats = (req, res) => {
                 });
             }
         }
-    }
-};
+}
+}*/
 //GET a una coleccion
 /*
 app.get(luc,(request,response)=>{
@@ -527,4 +677,4 @@ app.put(luc,(request,response)=>{
     if(!checkApiKey(request,response)) return;
     response.sendStatus(405);
 });
-};
+}
