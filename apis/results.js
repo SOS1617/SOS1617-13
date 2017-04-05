@@ -261,14 +261,16 @@ app.post(BASE_API_PATH + "/results", function(request, response) {
         }
     }
 });
+
+
 //PUT A UN RECURSO
 
 //PUT over a single resource
+//PUT over a single resource
 app.put(BASE_API_PATH + "/results/:city", function(request, response) {
-  if(!checkApiKeyFunction(request,response)) return;  
+    if(!checkApiKeyFunction(request,response)) return;
     var updatedresult = request.body;
     var city = request.params.city;
-    console.log(city);
     if (!updatedresult) {
         console.log("WARNING: New PUT request to /results-stats/ without establishment, sending 400...");
         response.sendStatus(400); // bad request
@@ -307,7 +309,6 @@ app.put(BASE_API_PATH + "/results/:city", function(request, response) {
         }
     }
 });
-
 
 
 
