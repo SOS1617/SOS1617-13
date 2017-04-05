@@ -75,6 +75,7 @@ app.get(luc,(request,response)=>{
   var elements = [];
    
    
+   
   
   
   if(limit>0 && offset>0){
