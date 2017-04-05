@@ -367,6 +367,7 @@ app.delete(luc,(request,response)=>{
 //PUT a una coleccion
 
 app.put(luc,(request,response)=>{
+     if(!checkApiKey(request,response)) return;
     response.sendStatus(405);
 });
 };
