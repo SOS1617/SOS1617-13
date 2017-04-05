@@ -11,7 +11,7 @@ app.get("/", function(request, response) {
 
 //Load Initial Data
 
-app.get(BASE_API_PATH + "/loadInitialData", (request, response) => {
+app.get(BASE_API_PATH + "/results/loadInitialData", (request, response) => {
     if(!checkApiKeyFunction(request,response)) return;
         
         dbresult.find({}).toArray(function(error, results) {
