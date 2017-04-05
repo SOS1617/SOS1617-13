@@ -70,41 +70,25 @@ app.get(luc,(request,response)=>{
   
   //paginación
   
-  var limit = parseInt(goal.limit);
-  var offset = parseInt(goal.offset);
+  var limit = parseInt(request.query.limit);
+  var offset = parseInt(request.query.offset);
   var elements = [];
    
    
    
   
  
-  if(limit>0 && offset>0){
+  if(limit && offset){
    console.log("INFO : new request to /goals");
     dbGoal.find({}).skip(offset).limit(limit).toArray(function(err, goals) {
      if (err) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
             } else {
-                 dbGoal.find({}).toArray(function(err, establishments) {
-                if (err) {
-                    console.error('WARNING: Error getting data from DB');
-                    response.sendStatus(500); // internal server error
-                }
-                else {
-                    var pagination = paginate(offset, limit, establishments.filter(search(from,to)), response);
-//                    if (pagination.length != 0) {
-                        console.log("INFO: Sending establishments: " + JSON.stringify(pagination, 2, null));
-                        response.send(pagination);
-//                    }
-//                    else
-//                        response.sendStatus(404);
-                }
-            });
-
-        }
-    });
                 
-               /* var filtered = goals.filter((param)=>{
+               
+                
+               var filtered = goals.filter((param)=>{
                       if ((city == undefined || param.city == city) && (hour == undefined || param.hour == hour) && 
                 (goals_first_team == undefined || param.goals_first_team == goals_first_team) && (goals_second_team == undefined || param.goals_second_team == goals_second_team) && 
                 (team_a == undefined || param.team_a == team_a)&& (team_b == undefined || param.team_b == team_b) ) {
@@ -147,9 +131,9 @@ app.get(luc,(request,response)=>{
        console.log("WARNING: There are not any goals with this properties");
        response.sendStatus(404); // not found
     }*/
- /*   });
+    });
     }
-});*/
+});
   function paginate(offset, limit, array, response) {
         var res = [];
         var cont = 0;
@@ -404,7 +388,7 @@ app.delete(luc,(request,response)=>{
 //PUT a una coleccion
 
 app.put(luc,(request,response)=>{
-     if(!checkApiKey(request,response)) return;
+    if(!checkApiKey(request,response)) return;
     response.sendStatus(405);
 });
 };
