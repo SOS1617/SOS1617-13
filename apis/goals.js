@@ -231,7 +231,7 @@ app.post(luc , function(request, response) {
 
 
 //PUT a un recurso
-/*
+
 app.put(luc +"/:city",(request,response)=>{
         if(!checkApiKey(request,response)) return;
 
@@ -268,7 +268,7 @@ app.put(luc +"/:city",(request,response)=>{
     }
     
 });
-*//*
+/*
 app.put(luc +"/:city", function (request, response) {
     if (!checkApiKey(request, response)) return;
     var updatedUclchampion = request.body;
