@@ -304,6 +304,36 @@ app.delete(luc+"/:city", function (request, response) {
         });
     }
 });
+
+//GET a recurso concreto con 2 parametros
+
+app.get(luc + "/:city/:team_a", function (request, response) {
+        if (!checkApiKey(request, response)) return;
+
+    var city = request.params.city;
+    var team_a = request.params.team_a;
+    if (!city || !team_a) {
+        console.log("WARNING: New GET request to /results/:city without city or without foul, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New GET request to /results/" + city + "/" + team_a);
+        dbGoal.find({city:city, $and:[{team_a:team_a}]}).toArray(function (err, results) {
+            if (err) {
+                console.error('WARNING: Error getting data from DB');
+                response.sendStatus(500); // internal server error
+            } else if (results.length > 0) { 
+                    var result = results[0]; //since we expect to have exactly ONE contact with this name
+                    console.log("INFO: Sending result: " + JSON.stringify(result, 2, null));
+                    response.send(result);
+                } else {
+                    console.log("WARNING: There are not any city with city " + city +  "and foul " + team_a);
+                    response.sendStatus(404); // not found
+                
+                }
+        });
+}
+});
+
 //DELETE a una coleccion
 
 app.delete(luc,(request,response)=>{
