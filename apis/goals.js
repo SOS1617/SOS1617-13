@@ -239,7 +239,7 @@ app.put(luc + "/:city", function(request, response) {
     var updatedGoal = request.body;
     var city = request.params.city;
      console.log(city);
-    if (!updatedGoal) {
+    if (updatedGoal.city!=city) {
         console.log("WARNING: New PUT request to /goals-stats/ without establishment, sending 400...");
         response.sendStatus(400); // bad request
     }
