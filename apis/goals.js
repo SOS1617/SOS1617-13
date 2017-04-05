@@ -293,7 +293,7 @@ app.delete(luc+"/:city",(request,response)=>{
 });
 
 //DELETE a una coleccion
-/*
+
 app.delete(luc,(request,response)=>{
         if(!checkApiKey(request,response)) return;
 
@@ -315,22 +315,6 @@ app.delete(luc,(request,response)=>{
         }
     });
 
-});
-*/
-app.delete(luc, function(request, response) {
-     if(!checkApiKey(request,response)) return;
-    console.log("INFO: New DELETE request to /results");
-    dbGoal.remove({}, {
-        multi: true
-    }, function(err, numRemoved) {
-        if (err) {
-            console.error('WARNING: Error removing data from DB');
-            response.sendStatus(500); // internal server error
-        }
-        else {
-            response.sendStatus(204);
-        }
-    });
 });
 
 
