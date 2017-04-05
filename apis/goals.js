@@ -210,17 +210,17 @@ app.post(luc , function(request, response) {
                 }
                 else {
                     var ResultsBeforeInsertion = goals.filter((goals) => {
-                        return (goals.city.localeCompare(goals.city, "en", {
+                        return (goals.city.localeCompare(newgoals.city, "en", {
                             'sensitivity': 'base'
                         }) === 0);
                     });
                     if (ResultsBeforeInsertion.length > 0) {
-                        console.log("WARNING: The result " + JSON.stringify(goals, 2, null) + " already extis, sending 409...");
+                        console.log("WARNING: The result " + JSON.stringify(newgoals, 2, null) + " already extis, sending 409...");
                         response.sendStatus(409); // conflict
                     }
                     else {
-                        console.log("INFO: Adding result " + JSON.stringify(goals, 2, null));
-                        dbGoal.insert(goals);
+                        console.log("INFO: Adding result " + JSON.stringify(newgoals, 2, null));
+                        dbGoal.insert(newgoals);
                         response.sendStatus(201); // created
                     }
                 }
