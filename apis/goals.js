@@ -45,7 +45,7 @@ app.get(luc + "/loadInitialData", (request, response) => {
                                 "goals_second_team": 1,
                                 "team_a": "malaga",
                                 "team_b": "español"
-                    }])
+                    }]);
                     
                     console.log("OK");
                     response.sendStatus(201);
