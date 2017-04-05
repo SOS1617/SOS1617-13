@@ -261,15 +261,62 @@ app.post(BASE_API_PATH + "/results", function(request, response) {
         }
     }
 });
+//PUT A UN RECURSO
+
+//PUT over a single resource
+app.put(BASE_API_PATH + "/results/:city", function(request, response) {
+  if(!checkApiKeyFunction(request,response)) return;  
+    var updatedresult = request.body;
+    var city = request.params.city;
+    console.log(city);
+    if (!updatedresult) {
+        console.log("WARNING: New PUT request to /results-stats/ without establishment, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New PUT request to /result/" + city + " with data " + JSON.stringify(updatedresult, 2, null));
+        if (!updatedresult.city || !updatedresult.foul || !updatedresult.goal_total || !updatedresult.loose || !updatedresult.victory || !updatedresult.year ||!updatedresult.name) {
+            console.log("WARNING: The result " + JSON.stringify(updatedresult, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        }
+        else {
+            dbresult.find({}).toArray( function(err, results) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                }
+                else {
+                    var resultsBeforeInsertion = results.filter((result) => {
+                        return (result.city.localeCompare(city, "en", {
+                            'sensitivity': 'base'
+                        }) === 0);
+                    });
+                    if (resultsBeforeInsertion.length > 0) {
+                        dbresult.update({
+                            city: city
+                        }, updatedresult);
+                        console.log("INFO: Modifying result with city " + city + " with data " + JSON.stringify(updatedresult, 2, null));
+                        response.send(updatedresult); // return the updated result
+                    }
+                    else {
+                        console.log("WARNING: There is not any result with city " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
+    }
+});
 
 
 
 
 
 //PUT a un recurso
-
+/*
 app.put(BASE_API_PATH +"/:city",(request,response)=>{
  if(!checkApiKeyFunction(request,response)) return;
+ 
  var updatedresult = request.body;
     var city = request.params.city;
     
@@ -304,6 +351,8 @@ app.put(BASE_API_PATH +"/:city",(request,response)=>{
     
 });
 
+*/
+
 //DELETE a un recurso
 
 /*app.delete(BASE_API_PATH+"/:city",(request,response)=>{
@@ -329,6 +378,9 @@ app.put(BASE_API_PATH +"/:city",(request,response)=>{
         });
     }
 });*/
+
+//DELETE a un recurso
+
 app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
     if(!checkApiKeyFunction(request,response)) return;
     var city = request.params.city;
@@ -345,8 +397,17 @@ app.delete(BASE_API_PATH + "/results/:city", function(request, response) {
                 console.error('WARNING: Error removing data from DB');
                 response.sendStatus(500); // internal server error
             }
+            else{
+            if (numRemoved.n > 0) {
+                console.log("INFO: All the uclchampions (" + numRemoved + ") have been succesfully deleted, sending 204...");
+                response.sendStatus(204);
+            }
+               //response.sendStatus(204); //204
+            
             else {
-               response.sendStatus(204);
+                console.log("WARNING: There are no contacts to delete");
+                response.sendStatus(404); // not found
+            }
             }
         });
     }
