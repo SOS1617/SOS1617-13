@@ -163,12 +163,12 @@ app.get(luc +"/:city",(request,response)=>{
         response.sendStatus(400); // bad request
     } else {
         console.log("INFO: New GET");
-        dbGoal.find({"city" : city}).toArray(function(error, team_a) {
+        dbGoal.find({"city" : city}).toArray(function(error, goal) {
             if (error) {
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
             } else {
-                var filteredcity=team_a.filter((s)=>{
+                var filteredcity=goal.filter((s)=>{
                     return (s.city.localeCompare(city,"en",{"sensitivity":"base"})===0);
                 });
              
@@ -270,7 +270,7 @@ app.put(luc +"/:city",(request,response)=>{
 });
 
 //DELETE a un recurso
-
+/*
 app.delete(luc+"/:city",(request,response)=>{
         if(!checkApiKey(request,response)) return;
 
@@ -293,8 +293,33 @@ app.delete(luc+"/:city",(request,response)=>{
             
         });
     }
+});*/
+app.delete(luc+"/:city", function (request, response) {
+    if (!checkApiKey(request, response)) return;
+    var cityParam = request.params.city;
+    if (!cityParam) {
+        console.log("WARNING: New DELETE request to /goals/:year without city, sending 400...");
+        response.sendStatus(400); // bad request
+    } else {
+        console.log("INFO: New DELETE request to /goals/" + cityParam);
+        dbGoal.remove({city:cityParam},{},function (err, result) {
+            var numRemoved = JSON.parse(result);
+            if (err) {
+                console.error('WARNING: Error removing data from DB');
+                response.sendStatus(500); // internal server error
+            } else {
+                console.log("INFO: goals removed: " + numRemoved);
+                if (numRemoved === 1) {
+                    console.log("INFO: The goals with city " + cityParam + " has been succesfully deleted, sending 204...");
+                    response.sendStatus(204); // no content
+                } else {
+                    console.log("WARNING: There are no goals to delete");
+                    response.sendStatus(404); // not found
+                }
+            }
+        });
+    }
 });
-
 //DELETE a una coleccion
 
 app.delete(luc,(request,response)=>{
@@ -302,13 +327,14 @@ app.delete(luc,(request,response)=>{
 
     
     console.log("INFO: New DELETE");
-    dbGoal.remove({}, {multi: true}, function (error, numRemoved) {
+    dbGoal.remove({}, {multi: true}, function (error, goal) {
+         var numRemoved=JSON.parse(goal);
         if (error) {
             console.error('WARNING: Error removing data from DB');
             response.sendStatus(500); // internal server error
         } else {
-            numRemoved=JSON.parse(numRemoved);
-            if (numRemoved > 0) {
+           
+            if (numRemoved.n > 0) {
                 console.log("INFO: All the goals have been succesfully deleted, sending 204...");
                 response.sendStatus(204); // no content
             } else {
