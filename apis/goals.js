@@ -268,7 +268,7 @@ app.put(luc +"/:city",(request,response)=>{
     }
     
 });
-*/
+*//*
 app.put(luc +"/:city", function (request, response) {
     if (!checkApiKey(request, response)) return;
     var updatedUclchampion = request.body;
@@ -306,7 +306,7 @@ app.put(luc +"/:city", function (request, response) {
             });
         }
     }
-});
+});*/
 app.delete(luc+"/:city", function (request, response) {
     if (!checkApiKey(request, response)) return;
     var cityParam = request.params.city;
