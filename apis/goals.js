@@ -4,6 +4,7 @@ var exports = module.exports= {};
 exports.register = function(app,dbGoal,luc,checkApiKey){
 
 
+
 // Base GET
 app.get("/", function(request, response) {
     console.log("INFO: Redirecting to /goals");
