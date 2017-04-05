@@ -120,7 +120,7 @@ app.get(luc,(request,response)=>{
        response.send(filtered);
       }
       else{
-          response.send(goals)
+          response.send(goals);
       }
   /*  else {
        console.log("WARNING: There are not any goals with this properties");
