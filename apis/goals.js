@@ -305,7 +305,7 @@ app.delete(luc,(request,response)=>{
             response.sendStatus(500); // internal server error
         } else {
             goals=JSON.parse(goals);
-            if (goals.n > 0) {
+            if (goals > 0) {
                 console.log("INFO: All the goals have been succesfully deleted, sending 204...");
                 response.sendStatus(204); // no content
             } else {
