@@ -231,7 +231,7 @@ app.post(luc , function(request, response) {
 
 
 //PUT a un recurso
-
+/*
 app.put(luc +"/:city",(request,response)=>{
         if(!checkApiKey(request,response)) return;
 
@@ -268,32 +268,49 @@ app.put(luc +"/:city",(request,response)=>{
     }
     
 });
-
-//DELETE a un recurso
-/*
-app.delete(luc+"/:city",(request,response)=>{
+*/
+app.put(luc +"/:city",(request,response)=>{
         if(!checkApiKey(request,response)) return;
 
-    var city=request.params.city;
     
-     if (!city) {
-        console.log("WARNING: New DELETE request to sending 400...");
+    var updatedGoal = request.body;
+    var city = request.params.city;
+    
+    if (!updatedGoal) {
+        console.log("WARNING: New PUT request to /goals/ without corner, sending 400...");
         response.sendStatus(400); // bad request
     } else {
-        console.log("INFO: New DELETE r");
-        dbGoal.remove({city: city}, {}, function (error, team_a) {
-            if (error) {
-                console.error('WARNING: Error removing data from DB');
-                response.sendStatus(500); // internal server error
-            }  else {
-                    
-                    console.log("deleted");
-                    response.sendStatus(200); // not found
-                }
+            console.log("INFO: New PUT request to /goals/" + city + " with data " + JSON.stringify(updatedGoal, 2, null));
+        if(updatedGoal.city!=city){
+            console.log("WARNING: New PUT request to /goals/ with diferent city, sending 400...");
+            response.sendStatus(400); // bad request
+        }
+         if (!updatedGoal.city || !updatedGoal.hour || !updatedGoal.goals_first_team || !updatedGoal.goals_second_team || !updatedGoal.team_a|| !updatedGoal.team_b) {
+            console.log("WARNING: PUT incorrect");
+            response.sendStatus(422); // unprocessable entity
+        } else {
             
-        });
+             dbGoal.find({}).toArray(function (err, goals) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                } else {
+                    var uclchampionsBeforeInsertion = goals.filter((uclchampion) => {
+                        return (goals.city.localeCompare(updatedGoal.city, "en", {'sensitivity': 'base'}) === 0);
+                    });
+                    if (uclchampionsBeforeInsertion.length > 0) {
+                        dbGoal.update({city: city}, updatedGoal);
+                        console.log("INFO: Modifying uclchampion with year " + city + " with data " + JSON.stringify(updatedGoal, 2, null));
+                        response.send(updatedGoal); // return the updated uclchampion
+                    } else {
+                        console.log("WARNING: There are not any uclchampion with year " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
     }
-});*/
+});
 app.delete(luc+"/:city", function (request, response) {
     if (!checkApiKey(request, response)) return;
     var cityParam = request.params.city;
