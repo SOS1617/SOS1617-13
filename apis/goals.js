@@ -118,10 +118,13 @@ app.get(luc,(request,response)=>{
        console.log("INFO: Sending stat: " + JSON.stringify(filtered, 2, null));
        response.send(filtered);
       }
-    else {
+      else{
+          response.send(goals)
+      }
+  /*  else {
        console.log("WARNING: There are not any goals with this properties");
        response.sendStatus(404); // not found
-    }
+    }*/
     });
     }
 });
@@ -184,7 +187,7 @@ app.get(luc +"/:city",(request,response)=>{
 
 //POST a una coleccion
 
-app.post(luc + "/goals", function(request, response) {
+app.post(luc , function(request, response) {
         if(!checkApiKey(request,response)) return;
 
     var newgoals = request.body;
