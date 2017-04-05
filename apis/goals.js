@@ -138,7 +138,7 @@ var insertar = function(elements,array,limit,offset){
         i++;
     }
     return elements;
-}
+};
 //POST a un recurso
 
 app.post(luc +"/:city",(request,response)=>{
@@ -323,4 +323,4 @@ app.delete(luc,(request,response)=>{
 app.put(luc,(request,response)=>{
     response.sendStatus(405);
 });
-}
+};
