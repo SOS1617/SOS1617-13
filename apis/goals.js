@@ -73,6 +73,7 @@ app.get(luc,(request,response)=>{
   var limit = parseInt(goal.limit);
   var offset = parseInt(goal.offset);
   var elements = [];
+   
   
   
   if(limit>0 && offset>0){
