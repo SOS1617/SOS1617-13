@@ -77,7 +77,7 @@ app.get(luc,(request,response)=>{
    
    
   
-  
+ 
   if(limit>0 && offset>0){
    console.log("INFO : new request to /goals");
     dbGoal.find({}).skip(offset).limit(limit).toArray(function(err, goals) {
@@ -85,8 +85,26 @@ app.get(luc,(request,response)=>{
                 console.error('WARNING: Error getting data from DB');
                 response.sendStatus(500); // internal server error
             } else {
+                 dbGoal.find({}).toArray(function(err, establishments) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                }
+                else {
+                    var pagination = paginate(offset, limit, establishments.filter(search(from,to)), response);
+//                    if (pagination.length != 0) {
+                        console.log("INFO: Sending establishments: " + JSON.stringify(pagination, 2, null));
+                        response.send(pagination);
+//                    }
+//                    else
+//                        response.sendStatus(404);
+                }
+            });
+
+        }
+    });
                 
-                var filtered = goals.filter((param)=>{
+               /* var filtered = goals.filter((param)=>{
                       if ((city == undefined || param.city == city) && (hour == undefined || param.hour == hour) && 
                 (goals_first_team == undefined || param.goals_first_team == goals_first_team) && (goals_second_team == undefined || param.goals_second_team == goals_second_team) && 
                 (team_a == undefined || param.team_a == team_a)&& (team_b == undefined || param.team_b == team_b) ) {
@@ -129,10 +147,29 @@ app.get(luc,(request,response)=>{
        console.log("WARNING: There are not any goals with this properties");
        response.sendStatus(404); // not found
     }*/
-    });
+ /*   });
     }
-});
-   
+});*/
+  function paginate(offset, limit, array, response) {
+        var res = [];
+        var cont = 0;
+
+        if (offset == undefined)
+            offset = 0;
+        if (limit == undefined)
+            limit = array.length;
+        if (offset > array.length) {
+            console.log("ERROR: Offset is greater than the array size");
+            response.sendStatus(400);
+        }
+        else
+            for (var i = offset; i < array.length; i++)
+                if (limit > cont) {
+                    res.push(array[i]);
+                    cont++;
+                }
+        return res;
+    } 
         
   // FUNCION PAGINACIÓN
   
