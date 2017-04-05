@@ -167,7 +167,7 @@ app.get(BASE_API_PATH + "/:country",(request,response)=>{
                     console.log("INFO: Sending country");
                     response.send(c);
                 } else {
-                    console.log("WARNING: There are not any contact with country " + country);
+                    console.log("WARNING: There are not any corners with country " + country);
                     response.sendStatus(404); // not found
                 }
             }
@@ -309,37 +309,33 @@ app.put(BASE_API_PATH + "/corners/:country", function(request, response) {
 
 //DELETE a un recurso
 
-app.delete(BASE_API_PATH + "/corners/:country", function(request, response) {
-    if(!checkApiKeyFunction(request,response)) return;
-    var country = request.params.country;
-    if (!country) {
-        console.log("WARNING: New DELETE request to /corners/:country without country, sending 400...");
+app.delete(BASE_API_PATH+"/:country", function (request, response) {
+    if (!checkApiKeyFunction(request, response)) return;
+    var cityParam = request.params.country;
+    if (!cityParam) {
+        console.log("WARNING: New DELETE request to /goals/:year without city, sending 400...");
         response.sendStatus(400); // bad request
-    }
-    else {
-        console.log("INFO: New DELETE request to /corners/" + country);
-        dbC.remove({
-            country: country
-        }, {}, function(err, numRemoved) {
+    } else {
+        console.log("INFO: New DELETE request to /goals/" + cityParam);
+        dbC.remove({country:cityParam},{},function (err, result) {
+            var numRemoved = JSON.parse(result);
             if (err) {
                 console.error('WARNING: Error removing data from DB');
                 response.sendStatus(500); // internal server error
-            }
-            else{
-            if (numRemoved.n > 0) {
-                console.log("INFO: All the corner (" + numRemoved + ") have been succesfully deleted, sending 204...");
-                response.sendStatus(204);
-            }
-               //response.sendStatus(204); //204
-            
-            else {
-                console.log("WARNING: There are no corners to delete");
-                response.sendStatus(404); // not found
-            }
+            } else {
+                console.log("INFO: corner removed: " + numRemoved);
+                if (numRemoved.n === 1) {
+                    console.log("INFO: The corner with country " + cityParam + " has been succesfully deleted, sending 204...");
+                    response.sendStatus(204); // no content
+                } else {
+                    console.log("WARNING: There are no corner to delete");
+                    response.sendStatus(404); // not found
+                }
             }
         });
     }
 });
+
 
 
 
