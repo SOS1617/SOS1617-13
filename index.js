@@ -114,7 +114,7 @@ MongoClientCorner.connect(url, {
 
     }
     dbC= database.collection("corners");
-    apicorners.register(app,dbC,vic,checkApiKeyFunction);
+    apicorners.register(app,dbC,BASE_API_PATH,checkApiKeyFunction);
 
 
 });

@@ -25,26 +25,26 @@ app.get(BASE_API_PATH + "/corners/loadInitialData", (request, response) => {
                         "country": "Spain",
                         "year": "2010",
                         "corner1": "2",
-                        "corne2": "1",
+                        "corner2": "1",
                         "corner3": "0"
                     },{
                         "country": "Spain",
                         "year": "2011",
                         "corner1": "2",
-                        "corne2": "1",
+                        "corner2": "1",
                         "corner3": "0"
                     },
                     {
                         "country": "Germany",
                         "year": "2011",
                         "corner1": "1",
-                        "corne2": "0",
+                        "corner2": "0",
                         "corner3": "4"
                     }, {
                         "country": "Greece",
                         "year": "2014",
                         "corner1": "5",
-                        "corne2": "3",
+                        "corner2": "3",
                         "corner3": "3"
                        
             }])
