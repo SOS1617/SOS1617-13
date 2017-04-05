@@ -309,7 +309,7 @@ app.delete(luc+"/:city", function (request, response) {
                 response.sendStatus(500); // internal server error
             } else {
                 console.log("INFO: goals removed: " + numRemoved);
-                if (numRemoved === 1) {
+                if (numRemoved.n === 1) {
                     console.log("INFO: The goals with city " + cityParam + " has been succesfully deleted, sending 204...");
                     response.sendStatus(204); // no content
                 } else {
