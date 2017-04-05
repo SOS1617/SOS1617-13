@@ -232,6 +232,51 @@ app.post(luc , function(request, response) {
 
 //PUT a un recurso
 
+//PUT over a single resource
+app.put(luc + "/:city", function(request, response) {
+  if(!checkApiKey(request,response)) return;  
+    var updatedresult = request.body;
+    var city = request.params.city;
+     console.log(city);
+    if (!updatedresult) {
+        console.log("WARNING: New PUT request to /goals-stats/ without establishment, sending 400...");
+        response.sendStatus(400); // bad request
+    }
+    else {
+        console.log("INFO: New PUT request to /goals/" + city + " with data " + JSON.stringify(updatedresult, 2, null));
+        if (!updatedresult.city || !updatedresult.hour || !updatedresult.goals_first_team || !updatedresult.goals_second_team || !updatedresult.team_a || !updatedresult.team_b) {
+            console.log("WARNING: The goals " + JSON.stringify(updatedresult, 2, null) + " is not well-formed, sending 422...");
+            response.sendStatus(422); // unprocessable entity
+        }
+        else {
+            dbGoal.find({}).toArray( function(err, goal) {
+                if (err) {
+                    console.error('WARNING: Error getting data from DB');
+                    response.sendStatus(500); // internal server error
+                }
+                else {
+                    var resultsBeforeInsertion = goal.filter((result) => {
+                        return (result.city.localeCompare(city, "en", {
+                            'sensitivity': 'base'
+                        }) === 0);
+                    });
+                    if (resultsBeforeInsertion.length > 0) {
+                        dbGoal.update({
+                            city: city
+                        }, updatedresult);
+                        console.log("INFO: Modifying result with city " + city + " with data " + JSON.stringify(updatedresult, 2, null));
+                        response.send(updatedresult); // return the updated result
+                    }
+                    else {
+                        console.log("WARNING: There is not any result with city " + city);
+                        response.sendStatus(404); // not found
+                    }
+                }
+            });
+        }
+    }
+});
+/*
 app.put(luc +"/:city",(request,response)=>{
         if(!checkApiKey(request,response)) return;
 
